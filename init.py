@@ -44,7 +44,7 @@ async def on_message(message):
             msg_bck = f"Al A.Q toplam {toplam} kisi geliyor:\n" + msg_bck
             await message.channel.send(msg_bck)
         
-        if "gelmeyen" in msg or "satan" in msg:    
+        elif "gelmeyen" in msg or "satan" in msg:    
 
             liste = sheet.get(SPREADSHEET_ID, PLAYER_RANGE ) 
             not_join_list = sheet.get(SPREADSHEET_ID, NOT_JOIN_RANGE) 
