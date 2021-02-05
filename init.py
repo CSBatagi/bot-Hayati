@@ -29,7 +29,7 @@ async def on_message(message):
     try: 
     #await message.channel.send('Selam moruklar ben Hayati')
         msg = message.content.lower() 
-        if "gelen" in msg and ("say" in msg or "liste" in msg):    
+        if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
             liste = sheet.get(SPREADSHEET_ID, PLAYER_RANGE ) 
             join_list = sheet.get(SPREADSHEET_ID, JOIN_RANGE) 
@@ -43,6 +43,22 @@ async def on_message(message):
 
             msg_bck = f"Al A.Q toplam {toplam} kisi geliyor:\n" + msg_bck
             await message.channel.send(msg_bck)
+        
+        if "gelmeyen" in msg or "satan" in msg:    
+
+            liste = sheet.get(SPREADSHEET_ID, PLAYER_RANGE ) 
+            not_join_list = sheet.get(SPREADSHEET_ID, NOT_JOIN_RANGE) 
+            msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
+            toplam = 0
+
+            for i, isim in enumerate(liste):
+                if not_join_list[i] == ['TRUE']:
+                    msg_bck += "".join(isim) + "\n"
+                    toplam += 1
+
+            msg_bck = f"Bu gotler varya bu gotler.. Toplam {toplam} kisi bu gotler:\n" + msg_bck
+            await message.channel.send(msg_bck)
+
 
         elif "ekle" in msg or "geliyo" in msg or "gelice" in msg:
 
