@@ -13,6 +13,7 @@ load_dotenv()
 SPREADSHEET_ID= os.getenv('SPREADSHEET_ID') # Add ID here
 JOIN_RANGE = os.getenv('JOIN_RANGE')
 NOT_JOIN_RANGE = os.getenv('NOT_JOIN_RANGE')
+ALL_JOIN_RANGE = os.getenv('ALL_JOIN_RANGE')
 PLAYER_RANGE = os.getenv('PLAYER_RANGE')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
   
@@ -24,24 +25,28 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+        
     if not client.user.mentioned_in(message):
         return
+
     try: 
     #await message.channel.send('Selam moruklar ben Hayati')
         msg = message.content.lower() 
         if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
-            liste = sheet.get(SPREADSHEET_ID, PLAYER_RANGE ) 
-            join_list = sheet.get(SPREADSHEET_ID, JOIN_RANGE) 
+            liste = sheet.get(SPREADSHEET_ID, ALL_JOIN_RANGE )         
             msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
             toplam = 0
 
             for i, isim in enumerate(liste):
-                if join_list[i] == ['TRUE']:
+                if i == 0:
+                    tarih = "".join(isim)
+                    continue
+                if isim:
                     msg_bck += "".join(isim) + "\n"
                     toplam += 1
 
-            msg_bck = f"Al A.Q toplam {toplam} kisi geliyor:\n" + msg_bck
+            msg_bck = f"Mac tarihi: {tarih}, toplam {toplam} kisi geliyor:\n" + msg_bck
             await message.channel.send(msg_bck)
         
         elif "gelmeyen" in msg or "satan" in msg:    
