@@ -124,7 +124,6 @@ async def on_message(message):
                         if player_id in steam_map:
                             for member in members:
                                 try:
-                                    print(member.name, c.PLAYER_DISCORD[steam_map[0]])
                                     if member.name == c.PLAYER_DISCORD[steam_map[0]]:
                                         darla_msg = random.choice(c.darla_cumleleri)
                                         await message.channel.send(f"{member.mention} {darla_msg}")
