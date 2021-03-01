@@ -17,6 +17,8 @@ load_dotenv()
 SPREADSHEET_ID= os.getenv('SPREADSHEET_ID') # Add ID here
 JOIN_RANGE = os.getenv('JOIN_RANGE')
 NOT_JOIN_RANGE = os.getenv('NOT_JOIN_RANGE')
+JOIN_RANGE_APP = os.getenv('JOIN_RANGE_APP')
+NOT_JOIN_RANGE_APP = os.getenv('NOT_JOIN_RANGE_APP')
 ALL_JOIN_RANGE = os.getenv('ALL_JOIN_RANGE')
 PLAYER_RANGE = os.getenv('PLAYER_RANGE')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -105,31 +107,45 @@ async def on_message(message):
             await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
 
         elif "darla" in msg:
-
-            liste = sheet.get(SPREADSHEET_ID, PLAYER_IDS)
-            
-            members = message.guild.members
-
-
+            await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
+            player_ids = sheet.get(SPREADSHEET_ID, PLAYER_IDS)
             join_list = list(chain(*sheet.get(SPREADSHEET_ID, JOIN_RANGE)))
             not_join_list = list(chain(*sheet.get(SPREADSHEET_ID, NOT_JOIN_RANGE)))
+            join_list_app = list(chain(*sheet.get(SPREADSHEET_ID, JOIN_RANGE_APP)))
+            not_join_list_app = list(chain(*sheet.get(SPREADSHEET_ID, NOT_JOIN_RANGE_APP)))
             # TODO: Umut appten geliyorum diyenler icin kolon acinda buraya appten geliyorum diyenleri de or ile eklemek gerek
-            response_list =  [join_list[i] or not_join_list[i] for i in range(len(join_list))]
-            player_ids = sheet.get(SPREADSHEET_ID, PLAYER_RANGE)
+            response_list =  [join_list[i] or not_join_list[i] or 
+                              not_join_list_app[i] or join_list_app[i]
+                              for i in range(len(join_list))]
+        
+            liste = sheet.get(SPREADSHEET_ID, PLAYER_RANGE)
+            
+            members = message.guild.members
+            darla_msg = f""
+            
+            #nested looplari azaltalim
+            steamid_map = {}
+            recent_name_map = {}
+            for m in player_ids:
+                #steamid_map[m[0]] = m[1]
+                recent_name_map[m[1]] = m[0]
+            for i, name in enumerate(liste):
+                if name[0] in recent_name_map:
+                    steam_id = recent_name_map[name[0]]
+                    steamid_map[steam_id] = response_list[i]
+                
+            for member in members:
+                if not member.id in c.PLAYER_DISCORD:
+                    continue
+                steam_id = c.PLAYER_DISCORD[member.id] 
+                if steam_id in steamid_map and steamid_map[steam_id] == 'FALSE':
+                    darla_msg += f"{member.mention}\n"
 
-            for idx, player_id in enumerate(player_ids):
-                player_id = player_id[0]
-                if response_list[idx] == 'FALSE':
-                    for steam_map in liste:
-                        if player_id in steam_map:
-                            for member in members:
-                                try:
-                                    if member.name == c.PLAYER_DISCORD[steam_map[0]]:
-                                        darla_msg = random.choice(c.darla_cumleleri)
-                                        await message.channel.send(f"{member.mention} {darla_msg}")
-                                except:
-                                    continue
-
+            if darla_msg:
+                await message.channel.send(darla_msg + random.choice(c.darla_cumleleri))
+            else:
+                await message.channel.send("Darlicak adam yok olm oha!")
+            
         elif "@here" in msg:
             return
                
