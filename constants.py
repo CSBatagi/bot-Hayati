@@ -36,3 +36,11 @@ darla_cumleleri = [
     "Su guzel ortami bozmayin. Millet ac ac! Gel yaz adini su hasret bitsin",
     "Ssss kime diyom lan! Gelmiyonuz mu?"
 ]
+
+SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
+JOIN_RANGE='DRAFT!B2:B40'
+NOT_JOIN_RANGE='DRAFT!D2:D40'
+JOIN_RANGE_APP='DRAFT!C2:C40'
+NOT_JOIN_RANGE_APP='DRAFT!E2:E40'
+PLAYER_RANGE='DRAFT!A2:A40'
+PLAYER_IDS='PLAYER IDS!A2:M35'
