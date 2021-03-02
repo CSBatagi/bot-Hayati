@@ -21,7 +21,6 @@ async def on_ready():
     print('SA moruklar ben {0.user}'.format(client))
 
 @client.event
-
 async def on_message(message):
     if message.author == client.user:
         return
@@ -83,7 +82,6 @@ async def on_message(message):
                 return 
 
         await message.channel.send("Listede yoksun ki lan!?") 
-        
         
     elif "ekle" in msg or "geliyo" in msg or "gelice" in msg:
 
@@ -149,9 +147,7 @@ async def on_message(message):
         return
             
     else:
-            await message.channel.send("Buyur abi?")
-
-
+        await message.channel.send("Buyur abi?")
 
 def get_recent_name_map():
     player_ids = sheet.get(c.SPREADSHEET_ID, c.PLAYER_IDS)
@@ -161,37 +157,52 @@ def get_recent_name_map():
     return steam_to_name_map
 
 
-
 def get_player_status(typ="darla"):
     player_ids = sheet.get(c.SPREADSHEET_ID, c.PLAYER_IDS)
+    liste = list(chain(*sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)))
+    
     join_list = list(chain(*sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE)))
+    string_to_bool(join_list)
     not_join_list = list(chain(*sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)))
+    string_to_bool(not_join_list)
     join_list_app = list(chain(*sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE_APP)))
+    string_to_bool(join_list_app)
     not_join_list_app = list(chain(*sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE_APP)))
-    # TODO: Umut appten geliyorum diyenler icin kolon acinda buraya appten geliyorum diyenleri de or ile eklemek gerek
+    string_to_bool(not_join_list_app)
+    liste = list(chain(*sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)))
+    
+    
     if typ == "darla":
 
         response_list =  [join_list[i] or not_join_list[i] or 
                         not_join_list_app[i] or join_list_app[i]
                         for i in range(len(join_list))]
     else:
-            response_list =  [join_list[i] or join_list_app[i]
-                              for i in range(len(join_list))]
+        response_list =  [join_list[i] or join_list_app[i]
+                            for i in range(len(join_list))]
 
-    liste = sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)
-    
     
     #nested looplari azaltalim
     player_status_steam = {}
     player_status_name = {}
     name_to_steam_map = {}
+
     for m in player_ids:
         name_to_steam_map[m[1]] = m[0]
+
     for i, name in enumerate(liste):
         if name[0] in name_to_steam_map:
             steam_id = name_to_steam_map[name[0]]
             player_status_steam[steam_id] = response_list[i]
             player_status_name[name[0]] = response_list[i]
+
     return player_status_steam, player_status_name 
+def string_to_bool(liste):
+    for i, s in enumerate(liste):
+        if s == 'FALSE':
+            liste[i] = False
+        elif s == 'TRUE':
+            liste[i] = True
+
 
 client.run(BOT_TOKEN) # Add bot token here
