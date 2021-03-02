@@ -38,7 +38,7 @@ async def on_message(message):
         toplam = 0
 
         for name, status in player_status_name.items():
-            if status == "TRUE": 
+            if status: 
                 msg_bck += "".join(name) + "\n"
                 toplam += 1
 
@@ -135,7 +135,7 @@ async def on_message(message):
             if not member.id in c.PLAYER_DISCORD:
                 continue
             steam_id = c.PLAYER_DISCORD[member.id] 
-            if steam_id in steamid_map and steamid_map[steam_id] == 'FALSE':
+            if steam_id in steamid_map and steamid_map[steam_id]:
                 darla_msg += f"{member.mention}\n"
 
         if darla_msg:
