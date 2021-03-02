@@ -135,7 +135,7 @@ async def on_message(message):
             if not member.id in c.PLAYER_DISCORD:
                 continue
             steam_id = c.PLAYER_DISCORD[member.id] 
-            if steam_id in steamid_map and steamid_map[steam_id]:
+            if steam_id in steamid_map and (not steamid_map[steam_id]):
                 darla_msg += f"{member.mention}\n"
 
         if darla_msg:
@@ -191,10 +191,10 @@ def get_player_status(typ="darla"):
         name_to_steam_map[m[1]] = m[0]
 
     for i, name in enumerate(liste):
-        if name[0] in name_to_steam_map:
-            steam_id = name_to_steam_map[name[0]]
+        if name in name_to_steam_map:
+            steam_id = name_to_steam_map[name]
             player_status_steam[steam_id] = response_list[i]
-            player_status_name[name[0]] = response_list[i]
+            player_status_name[name] = response_list[i]
 
     return player_status_steam, player_status_name 
 def string_to_bool(liste):
