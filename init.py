@@ -68,12 +68,12 @@ async def on_message(message):
 
         steam_id = c.PLAYER_DISCORD[message.author.id] 
         mapp = get_recent_name_map()
-        name = mapp[steam_id]
+        name = mapp[steam_id].strip()
         liste = sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE ) 
         join_list = sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE) 
         not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)
         for i, isim in enumerate(liste):
-            if "".join(isim).lower() == name:
+            if "".join(isim).lower().strip() == name:
                 join_list[i] = ['TRUE']
                 not_join_list[i] = ['FALSE']
                 sheet.update(c.SPREADSHEET_ID, c.JOIN_RANGE, join_list)
