@@ -30,7 +30,9 @@ async def on_message(message):
     if message.author == client.user:
         return
         
-    if not client.user.mentioned_in(message):
+    if client.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        pass
+    else:
         return
 
     msg = message.content.lower() 
