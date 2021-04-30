@@ -9,14 +9,9 @@ from gsheet import gsheet
 import constants as c
 
 import logging
-from logging.handlers import RotatingFileHandler
 
-log_filename = "debug.log"
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG, 
                     format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-log = logging.getLogger()
-handler = RotatingFileHandler(log_filename, maxBytes=1024, backupCount=1)
-log.addHandler(handler)
 
 sheet = gsheet()
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
@@ -83,7 +78,7 @@ async def on_message(message):
         join_list = sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE) 
         not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)
         for i, isim in enumerate(liste):
-            logging.debug(f"Steam Id:{steam_id}, Name from map: {name}", "Match Candidate: {isim}")
+            logging.debug(f"Steam Id:{steam_id}, Name from map: {name}, Match Candidate: {isim}")
             if "".join(isim).strip() == name:
                 join_list[i] = ['TRUE']
                 not_join_list[i] = ['FALSE']
