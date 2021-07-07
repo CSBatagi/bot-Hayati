@@ -9,10 +9,10 @@ import random
 from gsheet import gsheet 
 import constants as c
 
-import logging
+import logging.config
 
-logging.basicConfig(stream=sys.stdout, encoding='utf-8', level=int(os.getenv('LOGLEVEL')), 
-                    format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.config.fileConfig("logging.conf")
+logger = logging.getLogger(__name__)
 
 sheet = gsheet()
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
@@ -36,7 +36,7 @@ async def on_message(message):
     else:
         return
 
-    msg = message.content.lower() 
+    msg = message.content.lower().strip() 
     if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
@@ -70,8 +70,7 @@ async def on_message(message):
 
         await message.channel.send(msg_bck)
 
-    elif "ben" in msg and "ekle" in msg:
-        
+    elif ("ben" in msg and "ekle" in msg) or ("ekle" == msg):
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
         steam_id = c.PLAYER_DISCORD[message.author.id] 
@@ -81,7 +80,8 @@ async def on_message(message):
         join_list = sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE) 
         not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)
         for i, isim in enumerate(liste):
-            logging.debug(f"Steam Id:{steam_id}, Name from map: {name}, Match Candidate: {isim}")
+            #logger.debug(f"Steam Id:{steam_id}, Name from map: {name}, Match Candidate: {isim}")
+
             if "".join(isim).strip() == name:
                 join_list[i] = ['TRUE']
                 not_join_list[i] = ['FALSE']
