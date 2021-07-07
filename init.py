@@ -1,5 +1,5 @@
 import os 
-import sys
+import sys 
 from itertools import compress, chain
 import discord
 from discord.ext import commands 
@@ -11,7 +11,7 @@ import constants as c
 
 import logging
 
-logging.basicConfig(stream=sys.stdout, encoding='utf-8', level=logging.DEBUG, 
+logging.basicConfig(stream=sys.stdout, encoding='utf-8', level=int(os.getenv('LOGLEVEL')), 
                     format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 sheet = gsheet()
