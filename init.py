@@ -36,7 +36,11 @@ async def on_message(message):
     else:
         return
 
-    msg = message.content.lower().strip() 
+    msg = message.content.lower().strip().split() 
+    if '@' in msg[0]:
+        msg.pop(0)
+    msg ="".join(msg)
+
     if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
