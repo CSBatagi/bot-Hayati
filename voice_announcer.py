@@ -15,7 +15,7 @@ class VoiceAnnouncer():
         timer.ended += self.on_timer_ended
 
     async def on_timer_tick(self, phase, done, remaining):
-        print(f'Phase {phase} with {done} seconds done and {remaining} seconds remaining.')
+        print(f'Phase {phase} with {done} seconds done and {round(remaining)} seconds remaining.')
         
         # Countdown is delivered as one audio file to avoid stuttering due to rate limiting, routing etc.
         if remaining == 10 * 60:
@@ -32,11 +32,11 @@ class VoiceAnnouncer():
         if remaining == 60:
             await self.play('sounds/Event004_1DakikaKaldi.mp3')
 
-    def on_timer_started(self):
-        self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
+    async def on_timer_started(self):
+        await self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
 
-    def on_timer_ended(self):
-        self.play('sounds/Event005_MacBasliyor.mp3')
+    async def on_timer_ended(self):
+        await self.play('sounds/Event005_MacBasliyor.mp3')
 
     def detach(self):
         self._timer.started -= self.on_timer_started
