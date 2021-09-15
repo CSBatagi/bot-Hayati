@@ -1,45 +1,63 @@
 import asyncio
+from asyncio.tasks import sleep
 import discord
 
-from interval_timer import IntervalTimer, TimerPhase
+from interval_timer import IntervalTimer 
 
+import constants as c 
 
 class VoiceAnnouncer():
-    def __init__(self, voice_client: discord.VoiceClient):
-        self._voice_client = voice_client
+    def __init__(self, client: discord.Client, timer:IntervalTimer):
+        self._client = client
+        self._timer = timer 
+        ##timer.started += self.on_timer_started
+        timer.tick += self.on_timer_tick
+        timer.ended += self.on_timer_ended
 
-    def on_timer_tick(self, phase, done, remaining):
+    async def on_timer_tick(self, phase, done, remaining):
         print(f'Phase {phase} with {done} seconds done and {remaining} seconds remaining.')
         
         # Countdown is delivered as one audio file to avoid stuttering due to rate limiting, routing etc.
-        if remaining == 3:
+        if remaining == 10 * 60:
             # Note that this seems to be non-blocking without wrapping it into a task or alike.
-            self._voice_client.play(discord.FFmpegPCMAudio('sounds/countdown.mp3'))
+            await self.play('sounds/Event001_10DakikaAra.mp3')
 
-        if remaining == 5 and (phase == TimerPhase.Rest or phase == TimerPhase.Preparation):
-            self._voice_client.play(discord.FFmpegPCMAudio('sounds/prepare.mp3'))
+        if remaining == 5 * 60:
+            # Note that this seems to be non-blocking without wrapping it into a task or alike.
+            await self.play('sounds/Event002_5DakikaKaldi.mp3')
 
-        # Play sound halfway through the work phase if it is 30 seconds or longer.
-        if phase == TimerPhase.Work and remaining + done > 29:
-            # We get ticks for every full second.
-            # If work is set for an uneven amount of seconds, we cannot hit the exact half.
-            # Play sound half a second earlier then.
-            if done == remaining or done + 1 == remaining:
-                self._voice_client.play(discord.FFmpegPCMAudio('sounds/bell.mp3'))
+        if remaining == 3 * 60:
+            await self.play('sounds/Event003_3DakikaKaldi.mp3')
+
+        if remaining == 60:
+            await self.play('sounds/Event004_1DakikaKaldi.mp3')
 
     def on_timer_started(self):
         self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
 
     def on_timer_ended(self):
-        self._voice_client.play(discord.FFmpegPCMAudio('sounds/all-done.mp3'))
+        self.play('sounds/Event005_MacBasliyor.mp3')
 
-    def attach(self, timer: IntervalTimer):
-        # Attach to the timer events.
-        timer.started += self.on_timer_started
-        timer.tick += self.on_timer_tick
-        timer.ended += self.on_timer_ended
+    def detach(self):
+        self._timer.started -= self.on_timer_started
+        self._timer.tick -= self.on_timer_tick
+        self._timer.ended -= self.on_timer_ended
+    
+    async def play(self, mp3):
+        for i, id in enumerate(c.voice_channels):
+            if i == 0:
+                channel = self._client.get_channel(id)
+                voice_client = await channel.connect()
+            else:
+                await voice_client.move_to(self._client.get_channel(id))
 
-    def detach(self, timer: IntervalTimer):
-        timer.started -= self.on_timer_started
-        timer.tick -= self.on_timer_tick
-        timer.ended -= self.on_timer_ended
+            voice_client.play(discord.FFmpegPCMAudio(mp3))
+            while voice_client.is_playing():
+                await sleep(1)
+
+        await voice_client.disconnect()
+
+            
+    
+
+

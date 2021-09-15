@@ -31,6 +31,7 @@ PLAYER_DISCORD = {
     478025230388953119:'STEAM_0:0:44294193' #yes
 }
 
+voice_channels = [810257173757952012, 712371482902134785, 810257129259925544]
 darla_cumleleri = [
     "Guzel kardesim gelmiyor musunuz? Gelsenize batak cok guzel. Gelsene dedim bak. Gelsene lan it",
     "Su guzel ortami bozmayin. Millet ac ac! Gel yaz adini su hasret bitsin",

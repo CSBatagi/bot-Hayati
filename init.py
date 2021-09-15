@@ -1,3 +1,4 @@
+import re
 from gsheet import GSheet
 import os 
 from itertools import chain
@@ -24,8 +25,11 @@ sheet = GSheet()
 load_dotenv()
 ##voice 
 bot = commands.Bot(command_prefix='!')
+
+global timer, voice_announcer
+
 timer = IntervalTimer()
-voice_announcer = None
+voice_announcer = VoiceAnnouncer(client,timer) 
   
 @client.event
 async def on_ready():
@@ -45,6 +49,9 @@ async def on_message(message: discord.Message):
     if '@' in msg[0]:
         msg.pop(0)
     msg ="".join(msg)
+
+    if "@here" in msg or "@everyone" in msg:
+        return
 
     if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
@@ -123,9 +130,27 @@ async def on_message(message: discord.Message):
             await message.channel.send(darla_msg + random.choice(c.darla_cumleleri))
         else:
                 await message.channel.send("Darlicak adam yok olm oha!")
-            
-    elif "@here" in msg:
-        return
+    elif "say" in message.content.lower().split():
+
+        if timer.running():
+            await message.channel.send('Hala sayiyorum ulan kac tane isi yapicam?')
+            return
+        msglist = message.content.lower().split() 
+        for m in msglist:
+            if re.match('^[0-9]+$', m):
+                await timer.start(minutes = int(m))
+                await message.channel.send(f'{timer.print_config()}')
+                break
+            elif re.match('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$', m):
+                digits = m.split(":")
+                digits = int(digits[0]), int(digits[1])
+                await timer.start(until = digits)
+                await message.channel.send(f'{timer.print_config()}')
+                break
+        await message.channel.send("Neye sayayim a.q") 
+
+    elif "dur" == msg:
+        await message.channel.send( timer.stop()) 
             
     else:
         await message.channel.send("Buyur abi?")

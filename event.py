@@ -15,6 +15,6 @@ class Event:
         self.listeners.remove(listener)
         return self
 
-    def invoke(self, *args, **kwargs):
+    async def invoke(self, *args, **kwargs):
         for listener in self.listeners:
-            listener(*args, **kwargs)
+            await listener(*args, **kwargs)

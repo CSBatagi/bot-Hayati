@@ -1,5 +1,6 @@
 import asyncio
 import enum
+import datetime
 
 from event import Event
 
@@ -10,9 +11,7 @@ class IntervalTimer:
         self.tick = Event()
         self.ended = Event()
 
-        self._repetitions = 4
-        self._work = 45
-        self._rest = 15
+        self._seconds = 10 * 60
 
         self._task = None
 
@@ -20,65 +19,36 @@ class IntervalTimer:
         return not (self._task is None or self._task.done())
 
     def print_config(self):
-        return f'{self._repetitions} repetitions of {self._work} seconds work and {self._rest} seconds rest'
+        return f'{self._seconds / 60} dakika geri saymaya basladim'
 
-    def start(self, repetitions: int, work: int, rest: int):
-        self._repetitions = repetitions
-        self._work = work
-        self._rest = rest
+    async def start(self, minutes: int = None, until: tuple = None):
+        if minutes:
+            self._seconds = minutes * 60 + 2
+        elif until:
+            timenow = datetime.datetime.now()
+            deadline = timenow.replace(hour = until[0], minute = until[1]) 
+            timeleft = deadline - timenow 
+            self._seconds = timeleft.seconds + 2
+        else:
+            return 'sictim burda abiler'
         
         self._task = asyncio.create_task(self._run_timer())
-        self.started.invoke()
-        print('Timer started.')
-
-    def restart(self):
-        self._task = asyncio.create_task(self._run_timer())
-        self.started.invoke()
-        print('Timer started.')
+        await self.started.invoke()
+        return f'Saymaya basladim {self._seconds / 60} dakika kaldi.'
 
     def stop(self):
         self._task.cancel()
-        print('Timer stopped.')
+        return 'Saymayi biraktim burda'
 
     async def _run_timer(self):
-        # Start with a prep phase
-        prep = 17
-        prep_done = 0
-        while prep_done < prep:
-            await asyncio.sleep(1)
-            prep_done += 1
-            self.tick.invoke(phase=TimerPhase.Preparation, done=prep_done, remaining=prep - prep_done)
         
-        # Note that the limits are exclusive upper bounds since we count starting from 0.
-        repetitions_done = 0
-        while repetitions_done < self._repetitions:
-
-            # Work phase.
-            work_done = 0
-            while work_done < self._work:
-                await asyncio.sleep(1)
-                work_done += 1
-                self.tick.invoke(phase=TimerPhase.Work, done=work_done, remaining=self._work - work_done)
-            
-            repetitions_done += 1
-            # No need to do the rest phase after the last interval.
-            if repetitions_done == self._repetitions:
-                break
-
-            # Rest phase.
-            rest_done = 0
-            while rest_done < self._rest:
-                await asyncio.sleep(1)
-                rest_done += 1
-                self.tick.invoke(phase=TimerPhase.Rest, done=rest_done, remaining=self._rest - rest_done)
+        seconds_passed = 0
+        while seconds_passed < self._seconds:
+            await asyncio.sleep(1)
+            seconds_passed += 1
+            await self.tick.invoke(phase=1, done=seconds_passed, remaining=self._seconds - seconds_passed)
         
         # Wait to not clash with the last tick event.
         await asyncio.sleep(1)
-        self.ended.invoke()
+        await self.ended.invoke()
         print('Last interval completed.')
-
-
-class TimerPhase(enum.Enum):
-    Preparation = 1
-    Work = 2
-    Rest = 3
