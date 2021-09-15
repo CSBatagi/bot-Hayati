@@ -1,33 +1,42 @@
+import re
+from gsheet import GSheet
 import os 
-import sys 
-from itertools import compress, chain
+from itertools import chain
 import discord
 from discord.ext import commands 
 from dotenv import load_dotenv
 import random
 
-from gsheet import gsheet 
-import constants as c
+
+from interval_timer import IntervalTimer
+from voice_announcer import VoiceAnnouncer
 
 import logging.config
+import constants as c
 
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger(__name__)
 
-sheet = gsheet()
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
+sheet = GSheet()
 
 load_dotenv()
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+##voice 
+bot = commands.Bot(command_prefix='!')
+
+global timer, voice_announcer
+
+timer = IntervalTimer()
+voice_announcer = VoiceAnnouncer(client,timer) 
   
 @client.event
 async def on_ready():
     print('SA moruklar ben {0.user}'.format(client))
 
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.author == client.user:
         return
         
@@ -41,11 +50,14 @@ async def on_message(message):
         msg.pop(0)
     msg ="".join(msg)
 
+    if "@here" in msg or "@everyone" in msg:
+        return
+
     if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
-        _, player_status_name = get_player_status("gelen")
+        _, player_status_name = await sheet.get_player_status("gelen")
         msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
         toplam = 0
 
@@ -58,164 +70,90 @@ async def on_message(message):
         await message.channel.send(msg_bck)
     
     elif "gelmeyen" in msg or "satan" in msg:    
+        await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
-        liste = sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE ) 
-        not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE) 
-        not_join_list_app = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE) 
-        msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
-        toplam = 0
-
-        for i, isim in enumerate(liste):
-            if not_join_list[i] == ['TRUE'] or not_join_list_app[i] == ['TRUE'] :
-                msg_bck += "".join(isim) + "\n"
-                toplam += 1
-
-        msg_bck = f"Bu gotler varya bu gotler.. Toplam {toplam} kisi bu gotler:\n" + msg_bck
+        msg_bck, toplam = await sheet.not_coming()
+        msg_bck = f"Bu gotler varya bu gotler.. Toplam **{toplam}** kisi bu gotler:\n" + msg_bck
 
         await message.channel.send(msg_bck)
 
     elif ("ben" in msg and "ekle" in msg) or ("ekle" == msg):
+
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
-
         steam_id = c.PLAYER_DISCORD[message.author.id] 
-        mapp = get_recent_name_map()
-        name = mapp[steam_id].strip()
-        liste = sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE ) 
-        join_list = sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE) 
-        not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)
-        for i, isim in enumerate(liste):
-            #logger.debug(f"Steam Id:{steam_id}, Name from map: {name}, Match Candidate: {isim}")
-
-            if "".join(isim).strip() == name:
-                join_list[i] = ['TRUE']
-                not_join_list[i] = ['FALSE']
-                sheet.update(c.SPREADSHEET_ID, c.JOIN_RANGE, join_list)
-                sheet.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list)
-                await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
-                return 
-
-        await message.channel.send("Listede yoksun ki lan!?") 
+        name = await sheet.add(steam_id = steam_id)
+        if name: 
+            await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
+        else:
+            await message.channel.send("Listede yoksun ki lan!?") 
         
     elif "ekle" in msg or "geliyo" in msg or "gelice" in msg:
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
+        name = await sheet.add(msg = msg)
+        if name: 
+            await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
+        else:
+            await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
 
-        liste = sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE ) 
-        join_list = sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE) 
-        not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)
-        
-        for i, isim in enumerate(liste):
-            if "".join(isim).lower() in msg:
-                join_list[i] = ['TRUE']
-                not_join_list[i] = ['FALSE']
-                sheet.update(c.SPREADSHEET_ID, c.JOIN_RANGE, join_list)
-                sheet.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list)
-                await message.channel.send("Bu bebeyi ekledim: " + "".join(isim))
-                return 
+    elif ("ben" in msg and (("cikar" in msg) or ("çıkar" in msg)) or (("çıkar" == msg) or ("cikar" == msg))):
 
-        await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
+        await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
+        steam_id = c.PLAYER_DISCORD[message.author.id] 
+        name = await sheet.remove(steam_id = steam_id)
+        if name: 
+            await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **"
+                                        + "**".join(name) + "**")
+        else:
+            await message.channel.send("Listede yoksun ki lan!?")            
 
     elif "cikar" in msg or "çıkar" in msg or "gelmiyo" in msg or "gelmice" in msg:
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
-
-        liste = sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE ) 
-        join_list = sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE) 
-        not_join_list = sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE) 
-        
-        for i, isim in enumerate(liste):
-            if "".join(isim).lower() in msg:
-                join_list[i] = ['FALSE']
-                not_join_list[i] = ['TRUE']
-                sheet.update(c.SPREADSHEET_ID, c.JOIN_RANGE, join_list)
-                sheet.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list)
-                await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: " + "".join(isim))
-                return 
-
-        await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
+        name = await sheet.remove(msg=msg)
+        if name:
+            await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **" 
+                                        + "**".join(name) + "**")
+        else:
+            await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
 
     elif "darla" in msg:
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
-
-        steamid_map, _ = get_player_status()
         try:
             members = message.guild.members
         except:
             raise discord.DiscordException
-        darla_msg = f""
-        
-        for member in members:
-            if not member.id in c.PLAYER_DISCORD:
-                continue
-            steam_id = c.PLAYER_DISCORD[member.id] 
-            if steam_id in steamid_map and (not steamid_map[steam_id]):
-                darla_msg += f"{member.mention}\n"
+
+        darla_msg = await sheet.darla(members)
 
         if darla_msg:
             await message.channel.send(darla_msg + random.choice(c.darla_cumleleri))
         else:
                 await message.channel.send("Darlicak adam yok olm oha!")
-            
-    elif "@here" in msg:
-        return
+    elif "say" in message.content.lower().split():
+
+        if timer.running():
+            await message.channel.send('Hala sayiyorum ulan kac tane isi yapicam?')
+            return
+        msglist = message.content.lower().split() 
+        for m in msglist:
+            if re.match('^[0-9]+$', m):
+                await timer.start(minutes = int(m))
+                await message.channel.send(f'{timer.print_config()}')
+                return
+            elif re.match('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$', m):
+                digits = m.split(":")
+                digits = int(digits[0]), int(digits[1])
+                await timer.start(until = digits)
+                await message.channel.send(f'{timer.print_config()}')
+                return
+        await message.channel.send("Neye sayayim a.q") 
+
+    elif "dur" == msg:
+        await message.channel.send( timer.stop()) 
             
     else:
         await message.channel.send("Buyur abi?")
 
-def get_recent_name_map():
-    player_ids = sheet.get(c.SPREADSHEET_ID, c.PLAYER_IDS)
-    steam_to_name_map = {}
-    for row in player_ids:
-        steam_to_name_map[row[0]] = row[1]
-    return steam_to_name_map
 
-
-def get_player_status(typ="darla"):
-    player_ids = sheet.get(c.SPREADSHEET_ID, c.PLAYER_IDS)
-    liste = list(chain(*sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)))
-    
-    join_list = list(chain(*sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE)))
-    string_to_bool(join_list)
-    not_join_list = list(chain(*sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)))
-    string_to_bool(not_join_list)
-    join_list_app = list(chain(*sheet.get(c.SPREADSHEET_ID, c.JOIN_RANGE_APP)))
-    string_to_bool(join_list_app)
-    not_join_list_app = list(chain(*sheet.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE_APP)))
-    string_to_bool(not_join_list_app)
-    liste = list(chain(*sheet.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)))
-    
-    
-    if typ == "darla":
-
-        response_list =  [join_list[i] or not_join_list[i] or 
-                        not_join_list_app[i] or join_list_app[i]
-                        for i in range(len(join_list))]
-    else:
-        response_list =  [join_list[i] or join_list_app[i]
-                            for i in range(len(join_list))]
-
-    
-    #nested looplari azaltalim
-    player_status_steam = {}
-    player_status_name = {}
-    name_to_steam_map = {}
-
-    for m in player_ids:
-        name_to_steam_map[m[1]] = m[0]
-
-    for i, name in enumerate(liste):
-        if name in name_to_steam_map:
-            steam_id = name_to_steam_map[name]
-            player_status_steam[steam_id] = response_list[i]
-            player_status_name[name] = response_list[i]
-
-    return player_status_steam, player_status_name 
-def string_to_bool(liste):
-    for i, s in enumerate(liste):
-        if s == 'FALSE':
-            liste[i] = False
-        elif s == 'TRUE':
-            liste[i] = True
-
-
-client.run(BOT_TOKEN) # Add bot token here
+client.run(os.getenv('BOT_TOKEN')) # Add bot token here
