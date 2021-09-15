@@ -54,7 +54,7 @@ class VoiceAnnouncer():
             voice_client.play(discord.FFmpegPCMAudio(mp3))
             while voice_client.is_playing():
                 await sleep(1)
-
+        await sleep(1)
         await voice_client.disconnect()
 
             
