@@ -156,7 +156,7 @@ async def on_message(message: discord.Message):
 
     elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
         gcp.start_instance()
-        await message.channel.send("Serveri acmak icin talimat verdim. Acilmazsa bi daha durtersin, hadi canim benim.") 
+        await message.channel.send("Serveri acmak icin talimat verdim. INSALLAH KEYFE KEDER ACMIYORSUNDUR PARA YAZIYOR ONA GORE!!!. Acilmazsa bi daha durtersin, hadi canim benim.") 
 
     elif ("server" in msg and "kapa" in msg ):
         gcp.stop_instance()
