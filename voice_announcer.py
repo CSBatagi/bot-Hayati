@@ -22,19 +22,17 @@ class VoiceAnnouncer():
     async def on_timer_tick(self, phase, done, remaining):
         new_content = f" Kalan zaman: {datetime.timedelta(seconds=remaining)}"
         await(self.message.edit(content = self.message_content + new_content)) 
-        # Countdown is delivered as one audio file to avoid stuttering due to rate limiting, routing etc.
-        if remaining == 10 * 60:
-            # Note that this seems to be non-blocking without wrapping it into a task or alike.
+
+        if remaining == 10 * 60+ 10:
             create_task(self.play('sounds/Event001_10DakikaAra.mp3'))
 
-        if remaining == 5 * 60:
-            # Note that this seems to be non-blocking without wrapping it into a task or alike.
+        if remaining == 5 * 60 + 10:
             create_task(self.play('sounds/Event002_5DakikaKaldi.mp3'))
 
-        if remaining == 3 * 60:
+        if remaining == 3 * 60 + 10:
             create_task(self.play('sounds/Event003_3DakikaKaldi.mp3'))
 
-        if remaining == 60:
+        if remaining == 60 + 10:
             create_task (self.play('sounds/Event004_1DakikaKaldi.mp3'))
 
     async def on_timer_started(self):

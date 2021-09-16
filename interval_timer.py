@@ -18,7 +18,7 @@ class IntervalTimer:
         return not (self._task is None or self._task.done())
 
     def print_config(self):
-        return f'{round(self._seconds / 60)} dakika geri saymaya basladim'
+        return f'{round(self._seconds / 60)} dakika geri saymaya basladim.'
 
     async def start(self, minutes: int = None, until: tuple = None):
         if minutes:
