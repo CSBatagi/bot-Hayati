@@ -39,6 +39,8 @@ async def on_ready():
 async def on_message(message: discord.Message):
     if message.author == client.user:
         return
+    if message.mention_everyone:
+        return
         
     if client.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         pass
@@ -49,9 +51,6 @@ async def on_message(message: discord.Message):
     if '@' in msg[0]:
         msg.pop(0)
     msg ="".join(msg)
-
-    if "@here" in msg or "@everyone" in msg:
-        return
 
     if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
