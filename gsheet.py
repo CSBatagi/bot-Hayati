@@ -122,7 +122,7 @@ class GSheet(object):
                     create_task(self.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list))
                 ]
                 await gather(*tasks)
-                return name 
+                return isim
         return None
     async def remove (self, steam_id:str = None, msg: str = None) -> str:
         tasks = [

@@ -31,12 +31,17 @@ PLAYER_DISCORD = {
     478025230388953119:'STEAM_0:0:44294193' #yes
 }
 
-voice_channels = [810257173757952012, 712371482902134785, 810257129259925544]
+voice_channels = [810257173757952012, 810257129259925544, 712371482902134785] 
 darla_cumleleri = [
     "Guzel kardesim gelmiyor musunuz? Gelsenize batak cok guzel. Gelsene dedim bak. Gelsene lan it",
     "Su guzel ortami bozmayin. Millet ac ac! Gel yaz adini su hasret bitsin",
     "Ssss kime diyom lan! Gelmiyonuz mu?"
 ]
+
+project = 'esoteric-dryad-256520' 
+zone = 'europe-west4-b'  
+instance = 'hollanda'
+
 
 SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
 JOIN_RANGE='DRAFT!C2:C40'

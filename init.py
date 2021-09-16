@@ -1,7 +1,6 @@
 import re
 from gsheet import GSheet
 import os 
-from itertools import chain
 import discord
 from discord.ext import commands 
 from dotenv import load_dotenv
@@ -10,6 +9,7 @@ import random
 
 from interval_timer import IntervalTimer
 from voice_announcer import VoiceAnnouncer
+from gcp import GcpCompute
 
 import logging.config
 import constants as c
@@ -21,12 +21,11 @@ logger = logging.getLogger(__name__)
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 sheet = GSheet()
+gcp = GcpCompute()
 
 load_dotenv()
 ##voice 
 bot = commands.Bot(command_prefix='!')
-
-global timer, voice_announcer
 
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
@@ -138,18 +137,27 @@ async def on_message(message: discord.Message):
         for m in msglist:
             if re.match('^[0-9]+$', m):
                 await timer.start(minutes = int(m))
-                await message.channel.send(f'{timer.print_config()}')
+                msg = await message.channel.send(f'{timer.print_config()}')
+                voice_announcer.set_message(msg)
                 return
             elif re.match('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$', m):
                 digits = m.split(":")
                 digits = int(digits[0]), int(digits[1])
                 await timer.start(until = digits)
-                await message.channel.send(f'{timer.print_config()}')
+                msg = await message.channel.send(f'{timer.print_config()}')
+                voice_announcer.set_message(msg)
+                
                 return
         await message.channel.send("Neye sayayim a.q") 
 
     elif "dur" == msg:
-        await message.channel.send( timer.stop()) 
+       await timer.stop(message.channel) 
+
+    elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
+        await gcp.start_instance(message.channel)
+
+    elif ("server" in msg and "kapa" in msg ):
+        await gcp.stop_instance(message.channel)
             
     else:
         await message.channel.send("Buyur abi?")
