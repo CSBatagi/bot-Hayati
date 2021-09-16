@@ -10,11 +10,11 @@ class GcpCompute:
         self.service = discovery.build('compute', 'v1')
      
     print('VM Instance started')
-    async def start_instance(self):
+    def start_instance(self):
         print('VM Instance starting')
         request = self.service.instances().start(project=c.project, zone=c.zone, instance=c.instance)
         return request.execute()
 
-    async def stop_instance(self):
+    def stop_instance(self):
         request = self.service.instances().stop(project=c.project, zone=c.zone, instance=c.instance)
         return request.execute()
