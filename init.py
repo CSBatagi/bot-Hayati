@@ -10,6 +10,7 @@ import random
 
 from interval_timer import IntervalTimer
 from voice_announcer import VoiceAnnouncer
+from gcp import GcpCompute
 
 import logging.config
 import constants as c
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 sheet = GSheet()
+gcp = GcpCompute()
 
 load_dotenv()
 ##voice 
@@ -151,6 +153,14 @@ async def on_message(message: discord.Message):
 
     elif "dur" == msg:
         await message.channel.send( timer.stop()) 
+
+    elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
+        gcp.start()
+        await message.channel.send("Serveri acmak icin talimat verdim. Acilmazsa bi daha durtersin, hadi canim benim.") 
+
+    elif ("server" in msg and "kapa" in msg ):
+        gcp.stop()
+        await message.channel.send("Isallah kapanacak gene bi bak sen.") 
             
     else:
         await message.channel.send("Buyur abi?")

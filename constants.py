@@ -38,6 +38,11 @@ darla_cumleleri = [
     "Ssss kime diyom lan! Gelmiyonuz mu?"
 ]
 
+project = 'esoteric-dryad-256520' 
+zone = 'europe-west4-b'  
+instance = 'hollanda'
+
+
 SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
 JOIN_RANGE='DRAFT!C2:C40'
 NOT_JOIN_RANGE='DRAFT!E2:E40'
