@@ -10,7 +10,6 @@ class IntervalTimer:
         self.started = Event()
         self.tick = Event()
         self.ended = Event()
-
         self._seconds = 10 * 60
 
         self._task = None

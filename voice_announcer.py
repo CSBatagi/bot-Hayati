@@ -1,5 +1,5 @@
-import asyncio
-from asyncio.tasks import sleep
+import datetime
+from asyncio.tasks import create_task,sleep 
 import discord
 
 from interval_timer import IntervalTimer 
@@ -13,35 +13,42 @@ class VoiceAnnouncer():
         ##timer.started += self.on_timer_started
         timer.tick += self.on_timer_tick
         timer.ended += self.on_timer_ended
+        self.message = None
+        self.message_content = None
+    def set_message(self, msg):
+        self.message_content = msg.content
+        self.message = msg
 
     async def on_timer_tick(self, phase, done, remaining):
-        print(f'Phase {phase} with {done} seconds done and {round(remaining)} seconds remaining.')
-        
+        new_content = f" Kalan zaman: {datetime.timedelta(seconds=remaining)}"
+        await(self.message.edit(content = self.message_content + new_content)) 
         # Countdown is delivered as one audio file to avoid stuttering due to rate limiting, routing etc.
         if remaining == 10 * 60:
             # Note that this seems to be non-blocking without wrapping it into a task or alike.
-            await self.play('sounds/Event001_10DakikaAra.mp3')
+            create_task(self.play('sounds/Event001_10DakikaAra.mp3'))
 
         if remaining == 5 * 60:
             # Note that this seems to be non-blocking without wrapping it into a task or alike.
-            await self.play('sounds/Event002_5DakikaKaldi.mp3')
+            create_task(self.play('sounds/Event002_5DakikaKaldi.mp3'))
 
         if remaining == 3 * 60:
-            await self.play('sounds/Event003_3DakikaKaldi.mp3')
+            create_task(self.play('sounds/Event003_3DakikaKaldi.mp3'))
 
         if remaining == 60:
-            await self.play('sounds/Event004_1DakikaKaldi.mp3')
+            create_task (self.play('sounds/Event004_1DakikaKaldi.mp3'))
 
     async def on_timer_started(self):
-        await self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
+        create_task (self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3')))
 
     async def on_timer_ended(self):
-        await self.play('sounds/Event005_MacBasliyor.mp3')
+        create_task (self.play('sounds/Event005_MacBasliyor.mp3'))
+        self.message = None
 
     def detach(self):
         self._timer.started -= self.on_timer_started
         self._timer.tick -= self.on_timer_tick
         self._timer.ended -= self.on_timer_ended
+        self.message = None
     
     async def play(self, mp3):
         for i, id in enumerate(c.voice_channels):

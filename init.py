@@ -26,8 +26,6 @@ load_dotenv()
 ##voice 
 bot = commands.Bot(command_prefix='!')
 
-global timer, voice_announcer
-
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
   
@@ -138,13 +136,16 @@ async def on_message(message: discord.Message):
         for m in msglist:
             if re.match('^[0-9]+$', m):
                 await timer.start(minutes = int(m))
-                await message.channel.send(f'{timer.print_config()}')
+                msg = await message.channel.send(f'{timer.print_config()}')
+                voice_announcer.set_message(msg)
                 return
             elif re.match('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$', m):
                 digits = m.split(":")
                 digits = int(digits[0]), int(digits[1])
                 await timer.start(until = digits)
-                await message.channel.send(f'{timer.print_config()}')
+                msg = await message.channel.send(f'{timer.print_config()}')
+                voice_announcer.set_message(msg)
+                
                 return
         await message.channel.send("Neye sayayim a.q") 
 
