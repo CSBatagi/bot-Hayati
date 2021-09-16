@@ -22,12 +22,12 @@ class IntervalTimer:
 
     async def start(self, minutes: int = None, until: tuple = None):
         if minutes:
-            self._seconds = minutes * 60 + 2
+            self._seconds = minutes * 60 + 11 
         elif until:
             timenow = datetime.datetime.now()
             deadline = timenow.replace(hour = until[0], minute = until[1]) 
             timeleft = deadline - timenow 
-            self._seconds = timeleft.seconds + 2
+            self._seconds = timeleft.seconds + 11
         else:
             return 'sictim burda abiler'
         
