@@ -19,9 +19,11 @@ class VoiceAnnouncer():
         self.message_content = msg.content
         self.message = msg
 
-    async def on_timer_tick(self, phase, done, remaining):
+    async def message_updater(self, remaining):
         new_content = f" Kalan zaman: {datetime.timedelta(seconds=remaining)}"
         await(self.message.edit(content = self.message_content + new_content)) 
+
+    async def on_timer_tick(self, remaining):
         self._timer.lock()
         if remaining == 10 * 60+ 10:
             await self.play('sounds/Event001_10DakikaAra.mp3')
@@ -45,6 +47,7 @@ class VoiceAnnouncer():
         await self.play('sounds/Event005_MacBasliyor.mp3')
         self.message = None
         self._timer.unlock()
+
 
     def detach(self):
         self._timer.started -= self.on_timer_started

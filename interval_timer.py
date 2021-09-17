@@ -54,7 +54,7 @@ class IntervalTimer:
         while seconds_passed < self._seconds:
             await asyncio.sleep(1)
             seconds_passed += 1
-            await self.tick.invoke(phase=1, done=seconds_passed, remaining=self._seconds - seconds_passed)
+            await self.tick.invoke(phase=1,remaining=self._seconds - seconds_passed)
         
         # Wait to not clash with the last tick event.
         await asyncio.sleep(1)
