@@ -36,6 +36,7 @@ class IntervalTimer:
         return f'Saymaya basladim {self._seconds / 60} dakika kaldi.'
 
     def stop(self):
+        
         self._task.cancel()
         return 'Saymayi biraktim burda'
 

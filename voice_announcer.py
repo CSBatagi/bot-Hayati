@@ -42,6 +42,9 @@ class VoiceAnnouncer():
         create_task (self.play('sounds/Event005_MacBasliyor.mp3'))
         self.message = None
 
+    async def on_timer_ended(self):
+        self.message.author.voice.channel
+
     def detach(self):
         self._timer.started -= self.on_timer_started
         self._timer.tick -= self.on_timer_tick
@@ -55,10 +58,15 @@ class VoiceAnnouncer():
                 voice_client = await channel.connect()
             else:
                 await voice_client.move_to(self._client.get_channel(id))
-
-            voice_client.play(discord.FFmpegPCMAudio(mp3))
-            while voice_client.is_playing():
-                await sleep(1)
+            try:
+                voice_client.play(discord.FFmpegPCMAudio(mp3))
+                while voice_client.is_playing():
+                    await sleep(1)
+            except Exception as e:
+               print(str(e)) 
+               await voice_client.disconnect()
+               return
+               
         await sleep(1)
         await voice_client.disconnect()
 
