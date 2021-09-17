@@ -41,7 +41,8 @@ class IntervalTimer:
         return f'Saymaya basladim {self._seconds / 60} dakika kaldi.'
 
     async def stop(self, channel):
-        await channel.send('Bi sn a.q anons yapiyoz')
+        if self._lock: 
+            await channel.send('Bi sn a.q anons yapiyoz')
         while self._lock:
             await sleep(1) 
         self._task.cancel()

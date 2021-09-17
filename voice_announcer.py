@@ -67,6 +67,7 @@ class VoiceAnnouncer():
                 print(str(e)) 
                 await sleep(1)
                 await voice_client.disconnect()
+                self._timer.unlock()
                 return
                
         await sleep(1)
