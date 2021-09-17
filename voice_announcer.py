@@ -12,6 +12,7 @@ class VoiceAnnouncer():
         self._timer = timer 
         ##timer.started += self.on_timer_started
         timer.tick += self.on_timer_tick
+        timer.tick += self.message_updater
         timer.ended += self.on_timer_ended
         self.message = None
         self.message_content = None
@@ -24,29 +25,25 @@ class VoiceAnnouncer():
         await(self.message.edit(content = self.message_content + new_content)) 
 
     async def on_timer_tick(self, remaining):
-        self._timer.lock()
         if remaining == 10 * 60+ 10:
-            await self.play('sounds/Event001_10DakikaAra.mp3')
+            create_task(self.play('sounds/Event001_10DakikaAra.mp3'))
 
         if remaining == 5 * 60 + 10:
-            await self.play('sounds/Event002_5DakikaKaldi.mp3')
+            create_task(self.play('sounds/Event002_5DakikaKaldi.mp3'))
 
         if remaining == 3 * 60 + 10:
-            await self.play('sounds/Event003_3DakikaKaldi.mp3')
+            create_task(self.play('sounds/Event003_3DakikaKaldi.mp3'))
 
         if remaining == 60 + 10:
-            await self.play('sounds/Event004_1DakikaKaldi.mp3')
-        self._timer.unlock()
+            create_task(self.play('sounds/Event004_1DakikaKaldi.mp3'))
 
     async def on_timer_started(self):
 
         await self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
 
     async def on_timer_ended(self):
-        self._timer.lock()
-        await self.play('sounds/Event005_MacBasliyor.mp3')
+        create_task(self.play('sounds/Event005_MacBasliyor.mp3'))
         self.message = None
-        self._timer.unlock()
 
 
     def detach(self):
@@ -56,24 +53,28 @@ class VoiceAnnouncer():
         self.message = None
     
     async def play(self, mp3):
-        for i, id in enumerate(c.voice_channels):
-            if i == 0:
-                channel = self._client.get_channel(id)
-                voice_client = await channel.connect()
-            else:
-                await voice_client.move_to(self._client.get_channel(id))
-            try:
-                voice_client.play(discord.FFmpegPCMAudio(mp3))
-                while voice_client.is_playing():
-                    await sleep(1)
-            except Exception as e:
-                print(str(e)) 
-                await sleep(1)
-                await voice_client.disconnect()
-                return
-               
-        await sleep(1)
-        await voice_client.disconnect()
+
+        while self._timer.is_locked():
+            await sleep(1)
+        self._timer.lock()
+        try:
+            for i, id in enumerate(c.voice_channels):
+                if i == 0:
+                    channel = self._client.get_channel(id)
+                    voice_client = await channel.connect()
+                else:
+                    await voice_client.move_to(self._client.get_channel(id))
+                    voice_client.play(discord.FFmpegPCMAudio(mp3))
+                    while voice_client.is_playing():
+                        await sleep(1)
+
+        except Exception as e:
+            print(str(e)) 
+        finally:
+            self._timer.unlock()
+            await sleep(1)
+            await voice_client.disconnect()
+            
             
     
 

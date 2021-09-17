@@ -12,13 +12,18 @@ class IntervalTimer:
         self.tick = Event()
         self.ended = Event()
         self._seconds = 10 * 60
-        self_lock = False
-
+        self._lock = False
         self._task = None
+
     def lock(self):
         self._lock = True
+
     def unlock(self):
         self._lock = False
+
+    def is_locked(self):
+        return self._lock
+
     def running(self):
         return not (self._task is None or self._task.done())
 
@@ -54,7 +59,7 @@ class IntervalTimer:
         while seconds_passed < self._seconds:
             await asyncio.sleep(1)
             seconds_passed += 1
-            await self.tick.invoke(phase=1,remaining=self._seconds - seconds_passed)
+            await self.tick.invoke(remaining=self._seconds - seconds_passed)
         
         # Wait to not clash with the last tick event.
         await asyncio.sleep(1)
