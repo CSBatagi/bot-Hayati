@@ -1,8 +1,6 @@
-from asyncio.tasks import create_task
 import re
 from gsheet import GSheet
 import os 
-from itertools import chain
 import discord
 from discord.ext import commands 
 from dotenv import load_dotenv
@@ -156,10 +154,10 @@ async def on_message(message: discord.Message):
        await timer.stop(message.channel) 
 
     elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
-        create_task(gcp.start_instance(message.channel))
+        await gcp.start_instance(message.channel)
 
     elif ("server" in msg and "kapa" in msg ):
-        create_task(gcp.stop_instance(message.channel))
+        await gcp.stop_instance(message.channel)
             
     else:
         await message.channel.send("Buyur abi?")
