@@ -153,7 +153,7 @@ async def on_message(message: discord.Message):
         await message.channel.send("Neye sayayim a.q") 
 
     elif "dur" == msg:
-        await message.channel.send( timer.stop()) 
+       await timer.stop(message.channel) 
 
     elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
         create_task(gcp.start_instance(message.channel))

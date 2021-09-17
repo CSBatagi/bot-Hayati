@@ -52,6 +52,7 @@ class VoiceAnnouncer():
         self.message = None
     
     async def play(self, mp3):
+        self._timer.lock() 
         for i, id in enumerate(c.voice_channels):
             if i == 0:
                 channel = self._client.get_channel(id)
@@ -63,13 +64,14 @@ class VoiceAnnouncer():
                 while voice_client.is_playing():
                     await sleep(1)
             except Exception as e:
-               print(str(e)) 
-               await voice_client.disconnect()
-               return
+                print(str(e)) 
+                await sleep(1)
+                await voice_client.disconnect()
+                return
                
         await sleep(1)
         await voice_client.disconnect()
-
+        self._timer.unlock()
             
     
 

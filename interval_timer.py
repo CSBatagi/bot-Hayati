@@ -1,6 +1,7 @@
 import asyncio
-import enum
+from asyncio.tasks import sleep
 import datetime
+import time
 
 from event import Event
 
@@ -11,9 +12,13 @@ class IntervalTimer:
         self.tick = Event()
         self.ended = Event()
         self._seconds = 10 * 60
+        self_lock = False
 
         self._task = None
-
+    def lock(self):
+        self._lock = True
+    def unlock(self):
+        self._lock = False
     def running(self):
         return not (self._task is None or self._task.done())
 
@@ -35,10 +40,12 @@ class IntervalTimer:
         await self.started.invoke()
         return f'Saymaya basladim {self._seconds / 60} dakika kaldi.'
 
-    def stop(self):
-        
+    async def stop(self, channel):
+        await channel.send('Bi sn a.q anons yapiyoz')
+        while self._lock:
+            await sleep(1) 
         self._task.cancel()
-        return 'Saymayi biraktim burda'
+        await channel.send('Saymayi biraktim burda')
 
     async def _run_timer(self):
         
