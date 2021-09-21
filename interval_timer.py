@@ -1,7 +1,7 @@
 import asyncio
 from asyncio.tasks import sleep
 import datetime
-import time
+import pytz 
 
 from event import Event
 
@@ -11,9 +11,10 @@ class IntervalTimer:
         self.started = Event()
         self.tick = Event()
         self.ended = Event()
-        self._seconds = 10 * 60
         self._lock = False
         self._task = None
+        self._end = None
+        self._tz = pytz.timezone('Europe/Istanbul')
 
     def lock(self):
         self._lock = True
@@ -27,23 +28,19 @@ class IntervalTimer:
     def running(self):
         return not (self._task is None or self._task.done())
 
-    def print_config(self):
-        return f'{round(self._seconds / 60)} dakika geri saymaya basladim.'
-
     async def start(self, minutes: int = None, until: tuple = None):
+        start = datetime.datetime.now(tz=self._tz)
         if minutes:
-            self._seconds = minutes * 60 + 11 
+            self._end = start + datetime.timedelta(minutes = minutes, seconds = 5 )
         elif until:
-            timenow = datetime.datetime.now()
-            deadline = timenow.replace(hour = until[0], minute = until[1]) 
-            timeleft = deadline - timenow 
-            self._seconds = timeleft.seconds + 11
+            self._end = start.replace(hour = until[0], minute = until[1]) 
         else:
             return 'sictim burda abiler'
         
         self._task = asyncio.create_task(self._run_timer())
         await self.started.invoke()
-        return f'Saymaya basladim {self._seconds / 60} dakika kaldi.'
+        time_left = self._end - start
+        return f"{round(time_left.total_seconds() / 60)} dakika geri saymaya basladim."
 
     async def stop(self, channel):
         if self._lock: 
@@ -54,14 +51,11 @@ class IntervalTimer:
         await channel.send('Saymayi biraktim burda')
 
     async def _run_timer(self):
-        
-        seconds_passed = 0
-        while seconds_passed < self._seconds:
-            await asyncio.sleep(1)
-            seconds_passed += 1
-            await self.tick.invoke(remaining=self._seconds - seconds_passed)
+        while datetime.datetime.now(tz=self._tz) < self._end:
+            await sleep(1)
+            await self.tick.invoke(remaining=self._end - datetime.datetime.now(tz=self._tz))
         
         # Wait to not clash with the last tick event.
-        await asyncio.sleep(1)
+        await sleep(1)
         await self.ended.invoke()
         print('Last interval completed.')

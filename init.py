@@ -136,15 +136,15 @@ async def on_message(message: discord.Message):
         msglist = message.content.lower().split() 
         for m in msglist:
             if re.match('^[0-9]+$', m):
-                await timer.start(minutes = int(m))
-                msg = await message.channel.send(f'{timer.print_config()}')
+                time_left = await timer.start(minutes = int(m))
+                msg = await message.channel.send(time_left)
                 voice_announcer.set_message(msg)
                 return
             elif re.match('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$', m):
                 digits = m.split(":")
                 digits = int(digits[0]), int(digits[1])
-                await timer.start(until = digits)
-                msg = await message.channel.send(f'{timer.print_config()}')
+                time_left = await timer.start(until = digits)
+                msg = await message.channel.send(time_left)
                 voice_announcer.set_message(msg)
                 
                 return

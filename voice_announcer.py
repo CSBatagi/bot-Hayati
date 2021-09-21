@@ -1,4 +1,3 @@
-import datetime
 from asyncio.tasks import create_task,sleep 
 import discord
 
@@ -21,20 +20,20 @@ class VoiceAnnouncer():
         self.message = msg
 
     async def message_updater(self, remaining):
-        new_content = f" Kalan zaman: {datetime.timedelta(seconds=remaining)}"
+        new_content = f" Kalan zaman: {str(remaining).split('.')[0]}"
         await(self.message.edit(content = self.message_content + new_content)) 
 
     async def on_timer_tick(self, remaining):
-        if remaining == 10 * 60+ 10:
+        if 10*60 < remaining.seconds < 10 * 60 + 5:
             create_task(self.play('sounds/Event001_10DakikaAra.mp3'))
 
-        if remaining == 5 * 60 + 10:
+        if 5*60 < remaining.seconds < 5 * 60 + 5:
             create_task(self.play('sounds/Event002_5DakikaKaldi.mp3'))
 
-        if remaining == 3 * 60 + 10:
+        if 3*60 < remaining.seconds == 3 * 60 +5 :
             create_task(self.play('sounds/Event003_3DakikaKaldi.mp3'))
 
-        if remaining == 60 + 10:
+        if 60 < remaining.seconds < 60 + 5:
             create_task(self.play('sounds/Event004_1DakikaKaldi.mp3'))
 
     async def on_timer_started(self):
