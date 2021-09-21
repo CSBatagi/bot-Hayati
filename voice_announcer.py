@@ -24,20 +24,20 @@ class VoiceAnnouncer():
         await(self.message.edit(content = self.message_content + new_content)) 
 
     async def on_timer_tick(self, remaining):
-        if 10*60 < remaining.seconds < 10 * 60 + 5:
+        remaining_minutes = round(remaining.total_seconds() / 60) 
+        if remaining_minutes == 10:
             create_task(self.play('sounds/Event001_10DakikaAra.mp3'))
 
-        if 5*60 < remaining.seconds < 5 * 60 + 5:
+        elif remaining_minutes == 5:
             create_task(self.play('sounds/Event002_5DakikaKaldi.mp3'))
 
-        if 3*60 < remaining.seconds == 3 * 60 +5 :
+        elif remaining_minutes == 3 :
             create_task(self.play('sounds/Event003_3DakikaKaldi.mp3'))
 
-        if 60 < remaining.seconds < 60 + 5:
+        elif remaining_minutes == 1:
             create_task(self.play('sounds/Event004_1DakikaKaldi.mp3'))
 
     async def on_timer_started(self):
-
         await self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
 
     async def on_timer_ended(self):

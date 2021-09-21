@@ -38,7 +38,7 @@ class IntervalTimer:
             return 'sictim burda abiler'
         
         self._task = asyncio.create_task(self._run_timer())
-        await self.started.invoke()
+        #await self.started.invoke()
         time_left = self._end - start
         return f"{round(time_left.total_seconds() / 60)} dakika geri saymaya basladim."
 
