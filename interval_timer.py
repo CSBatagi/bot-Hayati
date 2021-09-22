@@ -1,6 +1,6 @@
 import asyncio
 from asyncio.tasks import sleep
-import datetime
+from datetime import datetime, timedelta
 import pytz 
 
 from event import Event
@@ -25,15 +25,16 @@ class IntervalTimer:
     def is_locked(self):
         return self._lock
 
-    def running(self):
+    def is_running(self):
         return not (self._task is None or self._task.done())
 
     async def start(self, minutes: int = None, until: tuple = None):
-        start = datetime.datetime.now(tz=self._tz)
+        await self.started.invoke()
+        start = datetime.now(tz=self._tz)
         if minutes:
-            self._end = start + datetime.timedelta(minutes = minutes, seconds = 5 )
+            self._end = start + timedelta(minutes = minutes, seconds = 1)
         elif until:
-            self._end = start.replace(hour = until[0], minute = until[1]) 
+            self._end = start.replace(hour = until[0], minute = until[1], seconds = 1) 
         else:
             return 'sictim burda abiler'
         
@@ -51,11 +52,12 @@ class IntervalTimer:
         await channel.send('Saymayi biraktim burda')
 
     async def _run_timer(self):
-        while datetime.datetime.now(tz=self._tz) < self._end:
+        while datetime.now(tz=self._tz) < self._end:
             await sleep(1)
-            await self.tick.invoke(remaining=self._end - datetime.datetime.now(tz=self._tz))
+            remaining = self._end - datetime.now(tz=self._tz)
+            remaining = remaining if remaining > timedelta(0) else timedelta(0)
+            await self.tick.invoke(remaining=remaining)
         
         # Wait to not clash with the last tick event.
-        await sleep(1)
         await self.ended.invoke()
         print('Last interval completed.')

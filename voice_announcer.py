@@ -9,12 +9,23 @@ class VoiceAnnouncer():
     def __init__(self, client: discord.Client, timer:IntervalTimer):
         self._client = client
         self._timer = timer 
-        ##timer.started += self.on_timer_started
-        timer.tick += self.on_timer_tick
+        timer.started += self.on_timer_started
         timer.tick += self.message_updater
+        timer.tick += self.on_timer_tick
         timer.ended += self.on_timer_ended
+        self.reset_state()
+
+    def reset_state(self):
+        self._minute_marks = [10,5,3,1]
+        self._sound_files = [
+            'sounds/Event001_10DakikaAra.mp3',
+            'sounds/Event002_5DakikaKaldi.mp3',
+            'sounds/Event003_3DakikaKaldi.mp3',
+            'sounds/Event004_1DakikaKaldi.mp3',
+        ]
         self.message = None
         self.message_content = None
+
     def set_message(self, msg):
         self.message_content = msg.content
         self.message = msg
@@ -25,31 +36,24 @@ class VoiceAnnouncer():
 
     async def on_timer_tick(self, remaining):
         remaining_minutes = round(remaining.total_seconds() / 60) 
-        if remaining_minutes == 10:
-            create_task(self.play('sounds/Event001_10DakikaAra.mp3'))
-
-        elif remaining_minutes == 5:
-            create_task(self.play('sounds/Event002_5DakikaKaldi.mp3'))
-
-        elif remaining_minutes == 3 :
-            create_task(self.play('sounds/Event003_3DakikaKaldi.mp3'))
-
-        elif remaining_minutes == 1:
-            create_task(self.play('sounds/Event004_1DakikaKaldi.mp3'))
-
-    async def on_timer_started(self):
-        await self._voice_client.play(discord.FFmpegPCMAudio('sounds/timer-set.mp3'))
+        for i, mark in enumerate(self._minute_marks):
+            if remaining_minutes == mark:
+                create_task(self.play(self._sound_files[i]))
+                self._minute_marks.pop(i)
+                self._sound_files.pop(i)
+        
+    def on_timer_started(self):
+        self.reset_state()
 
     async def on_timer_ended(self):
         create_task(self.play('sounds/Event005_MacBasliyor.mp3'))
-        self.message = None
 
 
     def detach(self):
         self._timer.started -= self.on_timer_started
         self._timer.tick -= self.on_timer_tick
         self._timer.ended -= self.on_timer_ended
-        self.message = None
+        self.reset_state()
     
     async def play(self, mp3):
 

@@ -130,7 +130,7 @@ async def on_message(message: discord.Message):
                 await message.channel.send("Darlicak adam yok olm oha!")
     elif "say" in message.content.lower().split():
 
-        if timer.running():
+        if timer.is_running():
             await message.channel.send('Hala sayiyorum ulan kac tane isi yapicam?')
             return
         msglist = message.content.lower().split() 
