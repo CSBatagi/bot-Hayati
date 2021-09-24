@@ -100,8 +100,7 @@ async def on_message(message: discord.Message):
         steam_id = c.PLAYER_DISCORD[message.author.id] 
         name = await sheet.remove(steam_id = steam_id)
         if name: 
-            await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **"
-                                        + "**".join(name) + "**")
+            await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **{name}**") 
         else:
             await message.channel.send("Listede yoksun ki lan!?")            
 
@@ -110,8 +109,7 @@ async def on_message(message: discord.Message):
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
         name = await sheet.remove(msg=msg)
         if name:
-            await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **" 
-                                        + "**".join(name) + "**")
+            await message.channel.send("Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **{name}**") 
         else:
             await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
 

@@ -122,7 +122,7 @@ class GSheet(object):
                     create_task(self.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list))
                 ]
                 await gather(*tasks)
-                return isim
+                return isim.pop()
         return None
     async def remove (self, steam_id:str = None, msg: str = None) -> str:
         tasks = [
@@ -147,7 +147,7 @@ class GSheet(object):
                     create_task(self.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list))
                 ]
                 await gather(*tasks)
-                return isim 
+                return isim.pop() 
 
         return None 
     async def darla(self, members: List) -> str:
