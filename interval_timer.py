@@ -34,7 +34,7 @@ class IntervalTimer:
         if minutes:
             self._end = start + timedelta(minutes = minutes, seconds = 1)
         elif until:
-            self._end = start.replace(hour = until[0], minute = until[1], seconds = 1) 
+            self._end = start.replace(hour = until[0], minute = until[1], second = 1) 
         else:
             return 'sictim burda abiler'
         
