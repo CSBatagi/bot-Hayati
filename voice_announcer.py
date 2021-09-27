@@ -66,7 +66,8 @@ class VoiceAnnouncer():
                 if i == 0:
                     voice_client = await channel.connect()
                 else:
-                    await voice_client.move_to(channel)
+                    await voice_client.disconnect()
+                    voice_client = await channel.connect()
 
                 voice_client.play(discord.FFmpegPCMAudio(mp3))
                 while voice_client.is_playing():
