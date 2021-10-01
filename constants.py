@@ -37,7 +37,7 @@ darla_cumleleri = [
     "Su guzel ortami bozmayin. Millet ac ac! Gel yaz adini su hasret bitsin",
     "Ssss kime diyom lan! Gelmiyonuz mu?"
 ]
-
+buyur_abi = "¯\_(ツ)_/¯"
 project = 'esoteric-dryad-256520' 
 zone = 'europe-west4-b'  
 instance = 'hollanda'

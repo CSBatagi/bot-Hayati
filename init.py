@@ -158,7 +158,7 @@ async def on_message(message: discord.Message):
         await gcp.stop_instance(message.channel)
             
     else:
-        await message.channel.send("Buyur abi?")
+        await message.channel.send(c.buyur_abi)
 
 
 client.run(os.getenv('BOT_TOKEN')) # Add bot token here
