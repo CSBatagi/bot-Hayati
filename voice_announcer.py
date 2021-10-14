@@ -18,10 +18,10 @@ class VoiceAnnouncer():
     def reset_state(self):
         self._minute_marks = [10,5,3,1]
         self._sound_files = [
-            'sounds/Event001_10DakikaAra.mp3',
-            'sounds/Event002_5DakikaKaldi.mp3',
-            'sounds/Event003_3DakikaKaldi.mp3',
-            'sounds/Event004_1DakikaKaldi.mp3',
+            'sounds/Event01_10Min.ogg',
+            'sounds/Event02_5Min.ogg',
+            'sounds/Event03_3Min.ogg',
+            'sounds/Event04_1Min.ogg',
         ]
         self.message = None
         self.message_content = None
@@ -46,7 +46,7 @@ class VoiceAnnouncer():
         self.reset_state()
 
     async def on_timer_ended(self):
-        create_task(self.play('sounds/Event005_MacBasliyor.mp3'))
+        create_task(self.play('sounds/Event05_SureBitti.ogg'))
 
 
     def detach(self):
@@ -55,7 +55,7 @@ class VoiceAnnouncer():
         self._timer.ended -= self.on_timer_ended
         self.reset_state()
     
-    async def play(self, mp3):
+    async def play(self, ogg):
 
         while self._timer.is_locked():
             await sleep(1)
@@ -69,7 +69,7 @@ class VoiceAnnouncer():
                     await voice_client.disconnect()
                     voice_client = await channel.connect()
 
-                voice_client.play(discord.FFmpegPCMAudio(mp3))
+                voice_client.play(discord.FFmpegOpusAudio(ogg))
                 while voice_client.is_playing():
                     await sleep(1)
 
