@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands 
 from dotenv import load_dotenv
 import random
+from asyncio import create_task, gather
 
 
 from interval_timer import IntervalTimer
@@ -55,16 +56,7 @@ async def on_message(message: discord.Message):
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
-        _, player_status_name = await sheet.get_player_status("gelen")
-        msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
-        toplam = 0
-
-        for name, status in player_status_name.items():
-            if status: 
-                msg_bck += "".join(name) + "\n"
-                toplam += 1
-
-        msg_bck = f"Toplam {toplam} kisi geliyor:\n" + msg_bck
+        msg_bck = await kadro_yaz() 
         await message.channel.send(msg_bck)
     
     elif "gelmeyen" in msg or "satan" in msg:    
@@ -82,6 +74,8 @@ async def on_message(message: discord.Message):
         name = await sheet.add(steam_id = steam_id)
         if name: 
             await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
+            await message.channel.send(await kadro_yaz())
+
         else:
             await message.channel.send("Listede yoksun ki lan!?") 
         
@@ -91,6 +85,7 @@ async def on_message(message: discord.Message):
         name = await sheet.add(msg = msg)
         if name: 
             await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
+            await message.channel.send(await kadro_yaz())
         else:
             await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
 
@@ -101,6 +96,7 @@ async def on_message(message: discord.Message):
         name = await sheet.remove(steam_id = steam_id)
         if name: 
             await message.channel.send(f"Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **{name}**") 
+            await message.channel.send(await kadro_yaz())
         else:
             await message.channel.send("Listede yoksun ki lan!?")            
 
@@ -110,9 +106,10 @@ async def on_message(message: discord.Message):
         name = await sheet.remove(msg=msg)
         if name:
             await message.channel.send(f"Bu iti listeden cikardim, siktirsin gitsin aq cocugu: **{name}**") 
+            await message.channel.send(await kadro_yaz())
         else:
             await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
-
+        
     elif "darla" in msg:
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
         try:
@@ -160,5 +157,16 @@ async def on_message(message: discord.Message):
     else:
         await message.channel.send(c.buyur_abi)
 
+async def kadro_yaz():
+    _, player_status_name = await sheet.get_player_status("gelen")
+    msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
+    toplam = 0
+
+    for name, status in player_status_name.items():
+        if status: 
+            msg_bck += "".join(name) + "\n"
+            toplam += 1
+
+    return f"Toplam {toplam} kisi geliyor:\n" + msg_bck
 
 client.run(os.getenv('BOT_TOKEN')) # Add bot token here
