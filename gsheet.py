@@ -38,31 +38,20 @@ class GSheet(object):
          create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)),
          create_task(self.get(c.SPREADSHEET_ID, c.JOIN_RANGE)),
          create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)),
-         create_task(self.get(c.SPREADSHEET_ID, c.JOIN_RANGE_APP)),
-         create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE_APP))
         ]
 
-        (player_ids, liste, join_list,
-         not_join_list, join_list_app,
-         not_join_list_app) = await gather(*tasks)
+        (player_ids, liste, join_list, not_join_list) = await gather(*tasks)
 
         liste = list(chain(*liste))
         join_list = list(chain(*join_list))
         string_to_bool(join_list)
         not_join_list = list(chain(*not_join_list))
         string_to_bool(not_join_list)
-        join_list_app = list(chain(*join_list_app))
-        string_to_bool(join_list_app)
-        not_join_list_app = list(chain(*not_join_list_app))
-        string_to_bool(not_join_list_app)
         
         if typ == "darla":
-            response_list =  [join_list[i] or not_join_list[i] or 
-                            not_join_list_app[i] or join_list_app[i]
-                            for i in range(len(join_list))]
+            response_list =  [join_list[i] or not_join_list[i]  for i in range(len(join_list))]
         else:
-            response_list =  [join_list[i] or join_list_app[i]
-                                for i in range(len(join_list))]
+            response_list =  [join_list[i] for i in range(len(join_list))]
         
         #nested looplari azaltalim
         player_status_steam = {}
@@ -84,16 +73,15 @@ class GSheet(object):
         tasks = [
         create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_RANGE )), 
         create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)), 
-        create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)) 
         ]
 
-        (liste, not_join_list, not_join_list_app) = await gather(*tasks)
+        (liste, not_join_list) = await gather(*tasks)
 
         msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
         toplam = 0
 
         for i, isim in enumerate(liste):
-            if not_join_list[i] == ['TRUE'] or not_join_list_app[i] == ['TRUE'] :
+            if not_join_list[i] == ['TRUE'] :
                 msg_bck += "".join(isim) + "\n"
                 toplam += 1
 
