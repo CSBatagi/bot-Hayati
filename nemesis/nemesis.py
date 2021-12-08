@@ -3,17 +3,20 @@ import time
 import datetime
 import os
 import glob
+from sql_driver import Nemesis_Db
+
+nemesis_db = Nemesis_Db()
 
 def process_line(line, map):
     words = line.split("\"")
-    row = [None]*5
     if "killed" in line:
-        row[0] = datetime.date.today().strftime(f"%Y-%m-%d") 
-        row[1] = words[1].strip().split("<")[2].strip(">")
-        row[2] = words[3].strip().split("<")[2].strip(">")
-        row[3] = 1
-        row[4] = map
-        print(row) 
+        row =  ( datetime.date.today().strftime(f"%Y-%m-%d"), 
+                 words[1].strip().split("<")[2].strip(">"),
+                 words[3].strip().split("<")[2].strip(">"),
+                 map,
+                 1)
+        nemesis_db.add(row)
+         
 
 def get_latest_file(folder):
     list_of_files = glob.glob(folder + "/*.log") 
@@ -44,7 +47,7 @@ def follow(folder):
 
 if __name__ == '__main__':
     pause_flag = True
-    map = None
+    map = "" 
     loglines = follow("/serverlogs")
     # iterate over the generator
     for line in loglines:
