@@ -45,7 +45,7 @@ def follow(folder):
 if __name__ == '__main__':
     pause_flag = True
     map = None
-    loglines = follow("/home/csserver/serverfiles/cstrike/logs")
+    loglines = follow("/serverlogs")
     # iterate over the generator
     for line in loglines:
         if "*** [NEMESIS START] ***" in line:
