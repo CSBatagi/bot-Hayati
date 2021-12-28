@@ -12,11 +12,10 @@ from interval_timer import IntervalTimer
 from voice_announcer import VoiceAnnouncer
 from gcp import GcpCompute
 
-import logging.config
+import logging
 import constants as c
 
 logging.config.fileConfig("logging.conf")
-logger = logging.getLogger(__name__)
 
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
 intents = discord.Intents.all()
