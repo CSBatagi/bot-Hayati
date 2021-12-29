@@ -17,7 +17,7 @@ import logging.config
 import constants as c
 
 logging.config.fileConfig("logging.conf")
-logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
+logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
 intents = discord.Intents.all()
