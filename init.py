@@ -17,6 +17,7 @@ import logging.config
 import constants as c
 
 logging.config.fileConfig("logging.conf")
+logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
 
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
 intents = discord.Intents.all()
@@ -33,7 +34,7 @@ voice_announcer = VoiceAnnouncer(client,timer)
   
 @client.event
 async def on_ready():
-    print('SA moruklar ben {0.user}'.format(client))
+    logging.info('SA moruklar ben {0.user}'.format(client))
 
 @client.event
 async def on_message(message: discord.Message):
