@@ -13,6 +13,7 @@ from voice_announcer import VoiceAnnouncer
 from gcp import GcpCompute
 
 import logging
+import logging.config
 import constants as c
 
 logging.config.fileConfig("logging.conf")
