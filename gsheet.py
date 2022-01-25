@@ -2,7 +2,7 @@ from __future__ import print_function
 from asyncio import create_task, gather
 from googleapiclient.discovery import Resource, build
 from google.oauth2 import service_account
-from funs import string_to_bool
+from funs import ll_to_bool 
 import constants as c
 from itertools import chain
 from typing import List, Tuple 
@@ -43,10 +43,8 @@ class GSheet(object):
         (player_ids, liste, join_list, not_join_list) = await gather(*tasks)
 
         liste = list(chain(*liste))
-        join_list = list(chain(*join_list))
-        string_to_bool(join_list)
-        not_join_list = list(chain(*not_join_list))
-        string_to_bool(not_join_list)
+        join_list == ll_to_bool(join_list)
+        not_join_list = ll_to_bool(not_join_list)
         
         if typ == "darla":
             response_list =  [join_list[i] or not_join_list[i]  for i in range(len(join_list))]
@@ -60,7 +58,6 @@ class GSheet(object):
 
         for m in player_ids:
             name_to_steam_map[m[1]] = m[0]
-
         for i, name in enumerate(liste):
             if name in name_to_steam_map:
                 steam_id = name_to_steam_map[name]
