@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 WORKDIR /usr/src/app
 ENV PORT 8080
