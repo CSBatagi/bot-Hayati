@@ -2,7 +2,7 @@ from __future__ import print_function
 from asyncio import create_task, gather
 from googleapiclient.discovery import Resource, build
 from google.oauth2 import service_account
-from funs import ll_to_bool 
+from funs import format_matrix 
 import constants as c
 from itertools import chain
 from typing import List, Tuple 
@@ -34,17 +34,12 @@ class GSheet(object):
     
     async def get_player_status(self, typ: str = "darla") -> Tuple:
         tasks = [
-         create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_IDS)),
-         create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_RANGE)),
-         create_task(self.get(c.SPREADSHEET_ID, c.JOIN_RANGE)),
-         create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)),
+         create_task(self.get_name_to_steam_map()),
+         create_task(self.get(c.SPREADSHEET_ID, c.DRAFT_RANGE)),
         ]
 
-        (player_ids, liste, join_list, not_join_list) = await gather(*tasks)
-
-        liste = list(chain(*liste))
-        join_list == ll_to_bool(join_list)
-        not_join_list = ll_to_bool(not_join_list)
+        (name_to_steam_map, draft_matrix) = await gather(*tasks)
+        names, steamids, join_list, not_join_list = format_matrix(draft_matrix)
         
         if typ == "darla":
             response_list =  [join_list[i] or not_join_list[i]  for i in range(len(join_list))]
@@ -54,11 +49,8 @@ class GSheet(object):
         #nested looplari azaltalim
         player_status_steam = {}
         player_status_name = {}
-        name_to_steam_map = {}
 
-        for m in player_ids:
-            name_to_steam_map[m[1]] = m[0]
-        for i, name in enumerate(liste):
+        for i, name in enumerate(names):
             if name in name_to_steam_map:
                 steam_id = name_to_steam_map[name]
                 player_status_steam[steam_id] = response_list[i]
@@ -67,72 +59,58 @@ class GSheet(object):
         return player_status_steam, player_status_name 
 
     async def not_coming(self) -> Tuple:
-        tasks = [
-        create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_RANGE )), 
-        create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)), 
-        ]
 
-        (liste, not_join_list) = await gather(*tasks)
+        draft_matrix = await self.get(c.SPREADSHEET_ID, c.DRAFT_RANGE)
+        names, steamids, join_list, not_join_list = format_matrix(draft_matrix)
 
         msg_bck ="\n" #+ "\n".join(["".join(a) for i, a  in enumerate(liste) if join_list[i]])
         toplam = 0
 
-        for i, isim in enumerate(liste):
-            if not_join_list[i] == ['TRUE'] :
+        for i, isim in enumerate(names):
+            if not_join_list[i]:
                 msg_bck += "".join(isim) + "\n"
                 toplam += 1
 
         return msg_bck, toplam
     async def add(self, steam_id = None, msg = None) -> str:
         tasks = [
-        create_task(self.get(c.SPREADSHEET_ID, c.JOIN_RANGE)), 
-        create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)), 
-        create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_RANGE )), 
+        create_task(self.get_steam_to_name_map()),
+        create_task(self.get(c.SPREADSHEET_ID, c.DRAFT_RANGE)), 
         ]
 
+        (mapp, draft_matrix) = await gather(*tasks)
         if steam_id:
-            mapp = await self.get_recent_name_map()
             name = mapp[steam_id].strip()
+        
+        names, steamids, join_list, not_join_list = format_matrix(draft_matrix)
 
-        (liste,) = await gather(tasks.pop())
-        for i, isim in enumerate(liste):
+        for i, isim in enumerate(names):
             #logger.debug(f"Steam Id:{steam_id}, Name from map: {name}, Match Candidate: {isim}")
             if (steam_id and "".join(isim).strip() == name) or (msg and "".join(isim).lower() in msg):
-
-                (join_list, not_join_list) = await gather(*tasks)
-                join_list[i] = ['TRUE']
-                not_join_list[i] = ['FALSE']
-                tasks = [
-                    create_task(self.update(c.SPREADSHEET_ID, c.JOIN_RANGE, join_list)),
-                    create_task(self.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list))
-                ]
-                await gather(*tasks)
-                return isim.pop()
+                join_list[i] = True 
+                not_join_list[i] = False 
+                draft_matrix = [list(x) for x in zip(join_list, not_join_list)]
+                await self.update(c.SPREADSHEET_ID, c.DRAFT_UPDATE_RANGE, draft_matrix)
+                return isim
         return None
     async def remove (self, steam_id:str = None, msg: str = None) -> str:
         tasks = [
-            create_task(self.get(c.SPREADSHEET_ID, c.JOIN_RANGE)), 
-            create_task(self.get(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE)), 
-            create_task(self.get(c.SPREADSHEET_ID, c.PLAYER_RANGE )), 
+            create_task(self.get_steam_to_name_map()),
+            create_task(self.get(c.SPREADSHEET_ID, c.DRAFT_RANGE)), 
         ]
 
+        (mapp, draft_matrix) = await gather(*tasks)
         if steam_id:
-            mapp = await self.get_recent_name_map()
             name = mapp[steam_id].strip()
 
-        (liste,) = await gather(tasks.pop())
-
-        for i, isim in enumerate(liste):
+        names, steamids, join_list, not_join_list = format_matrix(draft_matrix)
+        for i, isim in enumerate(names):
             if (steam_id and "".join(isim).strip() == name) or (msg and "".join(isim).lower() in msg):
-                (join_list, not_join_list) = await gather(*tasks)
-                join_list[i] = ['FALSE']
-                not_join_list[i] = ['TRUE']
-                tasks = [
-                    create_task(self.update(c.SPREADSHEET_ID, c.JOIN_RANGE, join_list)),
-                    create_task(self.update(c.SPREADSHEET_ID, c.NOT_JOIN_RANGE, not_join_list))
-                ]
-                await gather(*tasks)
-                return isim.pop() 
+                join_list[i] = False
+                not_join_list[i] = True
+                draft_matrix = [list(x) for x in zip(join_list, not_join_list)]
+                await self.update(c.SPREADSHEET_ID, c.DRAFT_UPDATE_RANGE, draft_matrix)
+                return isim
 
         return None 
     async def darla(self, members: List) -> str:
@@ -148,10 +126,20 @@ class GSheet(object):
 
         return darla_msg
 
-    async def get_recent_name_map(self) -> dict:
+    async def get_steam_to_name_map(self) -> dict:
     
         player_ids = await self.get(c.SPREADSHEET_ID, c.PLAYER_IDS)
         steam_to_name_map = {}
         for row in player_ids:
             steam_to_name_map[row[0]] = row[1]
         return steam_to_name_map 
+
+    async def get_name_to_steam_map(self) -> dict:
+    
+        player_ids = await self.get(c.SPREADSHEET_ID, c.PLAYER_IDS)
+        name_to_steam_map = {}
+        for row in player_ids:
+            name_to_steam_map[row[1]] = row[0]
+        return name_to_steam_map
+       
+   
