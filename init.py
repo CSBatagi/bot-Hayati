@@ -5,8 +5,6 @@ import discord
 from discord.ext import commands 
 from dotenv import load_dotenv
 import random
-from asyncio import create_task, gather
-
 
 from interval_timer import IntervalTimer
 from voice_announcer import VoiceAnnouncer
@@ -68,27 +66,18 @@ async def on_message(message: discord.Message):
 
         await message.channel.send(msg_bck)
 
-    elif ("ben" in msg and "ekle" in msg) or ("ekle" == msg):
-
-        await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
-        steam_id = c.PLAYER_DISCORD[message.author.id] 
-        name = await sheet.add(steam_id = steam_id)
-        if name: 
-            await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
-            await message.channel.send(await kadro_yaz())
-
-        else:
-            await message.channel.send("Listede yoksun ki lan!?") 
-        
     elif "ekle" in msg or "geliyo" in msg or "gelice" in msg:
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
-        name = await sheet.add(msg = msg)
-        if name: 
+        steam_id = c.PLAYER_DISCORD[message.author.id]
+        if name := await sheet.add(msg=msg):
+            await message.channel.send(f"Bu aslan bu aslan. **{name}** eklendi.")
+            await message.channel.send(await kadro_yaz())
+        elif name := await sheet.add(steam_id = steam_id):
             await message.channel.send(f"Senin rumuz **{name}** di mi? Ekledim.")
             await message.channel.send(await kadro_yaz())
         else:
-            await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?") 
+            await message.channel.send("Böyle biri listede yok ki a.q napam ben simdi?")
 
     elif ("ben" in msg and (("cikar" in msg) or ("çıkar" in msg)) or (("çıkar" == msg) or ("cikar" == msg))):
 
