@@ -13,6 +13,7 @@ from gcp import GcpCompute
 import logging
 import logging.config
 import constants as c
+import random
 
 logging.config.fileConfig("logging.conf")
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
@@ -139,7 +140,12 @@ async def on_message(message: discord.Message):
        await timer.stop(message.channel) 
 
     elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
-        await gcp.start_instance(message.channel)
+        toss = random.randint(0, 2)
+        if toss == 0:
+            await gcp.start_instance(message.channel)
+        else:
+            await message.channel.send("Servera 50 lira sıkışmış kanka. Benim IBANa bi ateşlersen açayım. DE68500105178297336485")
+
 
     elif ("server" in msg and "kapa" in msg ):
         await gcp.stop_instance(message.channel)
