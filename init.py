@@ -140,7 +140,7 @@ async def on_message(message: discord.Message):
        await timer.stop(message.channel) 
 
     elif ("server" in msg and (("ac" in msg) or ("aç" in msg)) ):
-        toss = random.randint(0, 2)
+        toss = random.randint(0, 1)
         if toss == 0:
             await gcp.start_instance(message.channel)
         else:
