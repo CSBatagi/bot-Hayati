@@ -155,7 +155,8 @@ async def on_message(message: discord.Message):
 
     elif ("server" in msg and "kapa" in msg ):
         await gcp.stop_instance(message.channel)
-            
+    elif ("!gpt" in msg):
+         await client.process_commands(message)
     else:
         await message.channel.send(c.buyur_abi)
 
