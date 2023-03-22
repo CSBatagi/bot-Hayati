@@ -31,7 +31,7 @@ load_dotenv()
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
 
-@bot.command()
+@client.command()
 async def gpt(ctx):
     text = clean_text(generate_text(ctx.message.contents))
     await ctx.send(text)
