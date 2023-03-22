@@ -20,20 +20,19 @@ logging.config.fileConfig("logging.conf")
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 #client = commands.Bot(command_prefix=commands.when_mentioned) 
-bot = commands.Bot(command_prefix='!')
+client = commands.Bot(command_prefix='!')
 intents = discord.Intents.all()
-client = discord.Client(intents=intents)
+#client = discord.Client(intents=intents)
 sheet = GSheet()
 gcp = GcpCompute()
 
 load_dotenv()
-##voice 
-bot = commands.Bot(command_prefix='!')
+
 
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
 
-@bot.command()
+@client.command()
 async def gpt(ctx):
     text = clean_text(generate_text(ctx.message.contents))
     await ctx.send(text)
