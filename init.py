@@ -14,7 +14,7 @@ import logging
 import logging.config
 import constants as c
 import random
-import gpt
+from gpt import Gpt
 
 logging.config.fileConfig("logging.conf")
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
@@ -24,6 +24,7 @@ client = commands.Bot(command_prefix='!', intents=intents)
 #client = discord.Client(intents=intents)
 sheet = GSheet()
 gcp = GcpCompute()
+gpt = Gpt()
 
 load_dotenv()
 
@@ -33,8 +34,8 @@ voice_announcer = VoiceAnnouncer(client,timer)
 
 @client.command()
 async def gpt(ctx):
-    raw_text = generate_text(ctx.message.contents)
-    text = clean_text(raw_text)
+    raw_text = gpt.generate_text(ctx.message.contents)
+    text = gpt.clean_text(raw_text)
     await ctx.send(text)
 
   
