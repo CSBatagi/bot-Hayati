@@ -1,7 +1,9 @@
 import openai
 import re
+from dotenv import load_dotenv
 
 # Set up OpenAI API credentials
+load_dotenv()
 openai.api_key = os.getenv('OPEN_API_KEY')
 
 # Define function to generate text using GPT-3
