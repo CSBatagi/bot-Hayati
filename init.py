@@ -24,7 +24,7 @@ client = commands.Bot(command_prefix='!', intents=intents)
 #client = discord.Client(intents=intents)
 sheet = GSheet()
 gcp = GcpCompute()
-gpt = Gpt()
+gptObj = Gpt()
 
 load_dotenv()
 
@@ -34,8 +34,8 @@ voice_announcer = VoiceAnnouncer(client,timer)
 
 @client.command()
 async def gpt(ctx):
-    raw_text = gpt.generate_text(ctx.message.contents)
-    text = gpt.clean_text(raw_text)
+    raw_text = gptObj.generate_text(ctx.message.contents)
+    text = gptObj.clean_text(raw_text)
     await ctx.send(text)
 
   
