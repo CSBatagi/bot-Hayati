@@ -33,7 +33,8 @@ voice_announcer = VoiceAnnouncer(client,timer)
 
 @client.command()
 async def gpt(ctx):
-    text = clean_text(generate_text(ctx.message.contents))
+    raw_text = generate_text(ctx.message.contents)
+    text = clean_text(raw_text)
     await ctx.send(text)
 
   
