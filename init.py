@@ -68,7 +68,7 @@ async def on_message(message: discord.Message):
         logging.info('Sending to gpt')
         raw_text = gptObj.generate_text(msg)
         text = gptObj.clean_text(raw_text)
-        await message.send(text)
+        await message.channel.send(text)
 
     elif "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
