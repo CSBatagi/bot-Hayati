@@ -63,8 +63,15 @@ async def on_message(message: discord.Message):
     if '@' in msg[0]:
         msg.pop(0)
         msg ="".join(msg)
-
-    if gpt_mode:
+        
+    if ("gpt_mode" in msg):
+         if gpt_mode:
+            await message.channel.send('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
+            gpt_mode = False
+         else:
+            await message.channel.send('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
+            gpt_mode = True
+    elif gpt_mode:
         logging.info('Sending to gpt')
         raw_text = gptObj.generate_text(msg)
         text = gptObj.clean_text(raw_text)
@@ -167,13 +174,7 @@ async def on_message(message: discord.Message):
 
     elif ("server" in msg and "kapa" in msg ):
         await gcp.stop_instance(message.channel)
-    elif ("gpt_mode" in msg):
-         if gpt_mode:
-            await message.channel.send('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
-            gpt_mode = False
-         else:
-            await message.channel.send('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
-            gpt_mode = True
+
     else:
         await message.channel.send(c.buyur_abi)
 
