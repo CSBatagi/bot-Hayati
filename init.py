@@ -14,22 +14,32 @@ import logging
 import logging.config
 import constants as c
 import random
+from gpt import Gpt
 
 logging.config.fileConfig("logging.conf")
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
-#client = commands.Bot(command_prefix=commands.when_mentioned) 
-intents = discord.Intents.all()
-client = discord.Client(intents=intents)
+intents = discord.Intents.default()
+client = commands.Bot(command_prefix='!', intents=intents)
+#client = discord.Client(intents=intents)
 sheet = GSheet()
 gcp = GcpCompute()
+gptObj = Gpt()
 
 load_dotenv()
-##voice 
-bot = commands.Bot(command_prefix='!')
+
 
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
+gpt_mode = False 
+
+@client.command()
+async def gpt(ctx):
+    logging.info('Sending to gpt')
+    raw_text = gptObj.generate_text(ctx.message.content)
+    text = gptObj.clean_text(raw_text)
+    await ctx.send(text)
+
   
 @client.event
 async def on_ready():
@@ -37,6 +47,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
+    global gpt_mode
     if message.author == client.user:
         return
     if message.mention_everyone:
@@ -48,11 +59,25 @@ async def on_message(message: discord.Message):
         return
 
     msg = message.content.lower().strip().split() 
+  
     if '@' in msg[0]:
         msg.pop(0)
-    msg ="".join(msg)
+        msg ="".join(msg)
+        
+    if ("gpt_mode" in msg):
+         if gpt_mode:
+            await message.channel.send('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
+            gpt_mode = False
+         else:
+            await message.channel.send('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
+            gpt_mode = True
+    elif gpt_mode:
+        logging.info('Sending to gpt')
+        raw_text = gptObj.generate_text(msg)
+        text = gptObj.clean_text(raw_text)
+        await message.channel.send(text)
 
-    if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
+    elif "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
@@ -149,7 +174,7 @@ async def on_message(message: discord.Message):
 
     elif ("server" in msg and "kapa" in msg ):
         await gcp.stop_instance(message.channel)
-            
+
     else:
         await message.channel.send(c.buyur_abi)
 
