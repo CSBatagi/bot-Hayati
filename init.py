@@ -20,7 +20,6 @@ logging.config.fileConfig("logging.conf")
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 intents = discord.Intents.default()
-intents.message_content = True
 client = commands.Bot(command_prefix='!', intents=intents)
 #client = discord.Client(intents=intents)
 sheet = GSheet()
