@@ -47,6 +47,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
+    global gpt_mode
     if message.author == client.user:
         return
     if message.mention_everyone:
