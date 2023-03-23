@@ -31,6 +31,7 @@ load_dotenv()
 
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
+gpt_mode = False 
 
 @client.command()
 async def gpt(ctx):
@@ -57,11 +58,18 @@ async def on_message(message: discord.Message):
         return
 
     msg = message.content.lower().strip().split() 
+  
     if '@' in msg[0]:
         msg.pop(0)
-    msg ="".join(msg)
+        msg ="".join(msg)
 
-    if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
+    if gpt_mode:
+        logging.info('Sending to gpt')
+        raw_text = gptObj.generate_text(msg)
+        text = gptObj.clean_text(raw_text)
+        await message.send(text)
+
+    elif "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
@@ -158,8 +166,13 @@ async def on_message(message: discord.Message):
 
     elif ("server" in msg and "kapa" in msg ):
         await gcp.stop_instance(message.channel)
-    elif ("!gpt" in msg):
-         await client.process_commands(message)
+    elif ("gpt_mode" in msg):
+         if gpt_mode:
+            await client.process_commands('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
+            gpt_mode = False
+         else:
+            await client.process_commands('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
+            gpt_mode = True
     else:
         await message.channel.send(c.buyur_abi)
 
