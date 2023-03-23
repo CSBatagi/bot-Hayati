@@ -169,10 +169,10 @@ async def on_message(message: discord.Message):
         await gcp.stop_instance(message.channel)
     elif ("gpt_mode" in msg):
          if gpt_mode:
-            await client.process_commands('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
+            await message.channel.send('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
             gpt_mode = False
          else:
-            await client.process_commands('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
+            await message.channel.send('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
             gpt_mode = True
     else:
         await message.channel.send(c.buyur_abi)
