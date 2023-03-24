@@ -31,7 +31,7 @@ load_dotenv()
 
 timer = IntervalTimer()
 voice_announcer = VoiceAnnouncer(client,timer) 
-gpt_mode = False 
+
 
 @client.command()
 async def gpt(ctx):
@@ -47,7 +47,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
-    global gpt_mode
+   
     if message.author == client.user:
         return
     if message.mention_everyone:
@@ -58,26 +58,23 @@ async def on_message(message: discord.Message):
     else:
         return
 
-    msg = message.content.lower().strip().split() 
-  
+    msg = message.content.strip().split() 
     if '@' in msg[0]:
         msg.pop(0)
         msg ="".join(msg)
-        
-    if ("gpt_mode" in msg):
-         if gpt_mode:
-            await message.channel.send('Gpt moddan ciktim normal bildigin duz Hayatiyim.')
-            gpt_mode = False
-         else:
-            await message.channel.send('Gpt moda girdim. Normal moda donmek icin tekrar `gpt_mode` yaz')
-            gpt_mode = True
-    elif gpt_mode:
+
+    if message.channel.id == c.genel_channel_id:
         logging.info('Sending to gpt')
         raw_text = gptObj.generate_text(msg)
         text = gptObj.clean_text(raw_text)
         await message.channel.send(text)
+        return
 
-    elif "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
+
+    msg = msg.lower()
+ 
+
+    if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
 
         await message.channel.send("Bi sn ekranlarimi kontrol ediyorum..")
 
