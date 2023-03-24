@@ -59,14 +59,14 @@ async def on_message(message: discord.Message):
         return
 
     msg = message.content.lower().strip().split() 
-  
+    logging.info(f"{message.channel.id}")
     if message.channel.id == c.genel_channel_id:
         logging.info('Sending to gpt')
         raw_text = gptObj.generate_text(msg)
         text = gptObj.clean_text(raw_text)
         await message.channel.send(text)
         return
-        
+
     if '@' in msg[0]:
         msg.pop(0)
         msg ="".join(msg)
