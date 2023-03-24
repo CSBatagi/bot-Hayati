@@ -58,7 +58,10 @@ async def on_message(message: discord.Message):
     else:
         return
 
-    msg = message.content.lower().strip().split() 
+    msg = message.content.strip().split() 
+    if '@' in msg[0]:
+        msg.pop(0)
+        msg ="".join(msg)
 
     if message.channel.id == c.genel_channel_id:
         logging.info('Sending to gpt')
@@ -67,10 +70,8 @@ async def on_message(message: discord.Message):
         await message.channel.send(text)
         return
 
-    if '@' in msg[0]:
-        msg.pop(0)
-        msg ="".join(msg)
-        
+
+    msg = msg.lower()
  
 
     if "kadro" in msg or ("gelen" in msg and ("say" in msg or "liste" in msg)):    
