@@ -61,7 +61,7 @@ async def on_message(message: discord.Message):
     msg = message.content.strip().split() 
     if '@' in msg[0]:
         msg.pop(0)
-        msg ="".join(msg)
+    msg ="".join(msg)
 
     if message.channel.id == c.genel_channel_id:
         logging.info('Sending to gpt')
