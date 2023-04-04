@@ -37,7 +37,7 @@ class GcpCompute:
             time_elapsed = 0
             max_wait = 60 * 5
             self.stop_request.execute()
-            while (self.get_request.execute()['status'] != "TERMINATED"):
+            while self.get_request.execute()['status'] != "TERMINATED":
                 await sleep(3)
                 time_elapsed += 3
                 if time_elapsed >= max_wait:
