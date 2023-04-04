@@ -1,6 +1,8 @@
 # Credit to https://stackoverflow.com/a/57069782
 # This allows C#-ish event handlers.
 from inspect import iscoroutinefunction
+
+
 class Event:
     def __init__(self):
         self.listeners = []
@@ -21,4 +23,3 @@ class Event:
                 await listener(*args, **kwargs)
             else:
                 listener(*args, **kwargs)
-                
