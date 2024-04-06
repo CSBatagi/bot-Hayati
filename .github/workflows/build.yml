@@ -16,7 +16,7 @@ jobs:
         id: login-ghcr
         uses: docker/login-action@v3
         with:
-          registry: ${{env.REGISTRY}}
+          registry: ghcr.io/CSBatagi
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -24,7 +24,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: bot-Hayati}/bot-Hayati
+          images: ghcr.io/CSBatagi/bot-Hayati
           tags: |
             type=sha
 
