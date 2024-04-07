@@ -7,7 +7,7 @@ import constants as c
 class GcpCompute:
     def __init__(self):
         SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
-        secret_file = 'credentials.json'
+        secret_file = 'secrets/credentials.json'
         self.creds = service_account.Credentials.from_service_account_file(secret_file, scopes=SCOPES)
 
         self.service = discovery.build('compute', 'v1')

@@ -12,7 +12,7 @@ from funs import format_matrix
 class GSheet(object):
     def __init__(self):
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        secret_file = 'credentials.json'
+        secret_file = 'secrets/credentials.json'
         self.creds = service_account.Credentials.from_service_account_file(secret_file, scopes=SCOPES)
 
         self.service = build('sheets', 'v4', credentials=self.creds)
