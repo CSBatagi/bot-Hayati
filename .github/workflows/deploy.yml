@@ -34,9 +34,9 @@ jobs:
           version: '>= 363.0.0'
 
       - name: Use gcloud CLI
-        run:  >
+        run:  |
           gcloud compute instances update-container hayati-bedava \
           --container-image=ghcr.io/csbatagi/bot-hayati:${{steps.meta.outputs.tags}}  \
           --container-mount-host-path=mount-path=/usr/src/app/credentials.json,\
           host-path=/var/secrets/credentials.json,mode=ro \
-          --container-env BOT_TOKEN=${{env.DISCORD_TOKEN}} --zone=us-east1-b
+          --container-env BOT_TOKEN=${{secrets.DISCORD_TOKEN}} --zone=us-east1-b
