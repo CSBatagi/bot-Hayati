@@ -34,3 +34,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>= 363.0.0'
+
+      - name: Deploy
+        run: |
+          gcloud compute instances update-container hayati-bedava \
+          --container-image=ghcr.io/csbatagi/bot-hayati:${{steps.meta.outputs.tags}}  \
+          --container-mount-host-path=mount-path=/usr/src/app/credentials.json,host-path=/var/secrets/credentials.json,mode=ro \
+          --container-env BOT_TOKEN=${{secrets.DISCORD_TOKEN}} --zone=us-east1-b
