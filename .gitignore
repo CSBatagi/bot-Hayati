@@ -7,6 +7,7 @@ token.pickle
 __pycache__/
 *.py[cod]
 *$py.class
+      - name: Set up Docker Buildx
 
 # C extensions
 *.so
@@ -114,3 +115,8 @@ venv.bak/
 .mypy_cache/
 
 logs
+
+.idea
+# Ignore generated credentials from google-github-actions/auth
+gha-creds-*.json
+key.json

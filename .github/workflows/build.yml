@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to ghcr
+        id: login-ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io/CSBatagi
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/CSBatagi/bot-Hayati
+          tags: |
+            type=sha
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>= 363.0.0'
+
+      - name: Deploy
+        run: |
+          gcloud compute instances update-container hayati-bedava \
+          --container-image=ghcr.io/csbatagi/bot-hayati:${{steps.meta.outputs.tags}}  \
+          --container-mount-host-path=mount-path=/usr/src/app/credentials.json,host-path=/var/secrets/credentials.json,mode=ro \
+          --container-env BOT_TOKEN=${{secrets.DISCORD_TOKEN}} --zone=us-east1-b
