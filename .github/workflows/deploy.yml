@@ -25,14 +25,13 @@ jobs:
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/123719540575/locations/global/workloadIdentityPools/ci-pool/providers/my-provider
-          service_account: gha-hayati@esoteric-dryad-256520.iam.gserviceaccount.com
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           version: '>= 363.0.0'
-          
+
       - name: Test GCP Authentication
         run: gcloud compute instances list --project esoteric-dryad-256520
 
