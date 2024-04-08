@@ -32,9 +32,6 @@ jobs:
         with:
           version: '>= 363.0.0'
 
-      - name: Test GCP Authentication
-        run: gcloud compute instances list --project esoteric-dryad-256520
-
       - name: Use gcloud CLI
         run:  |
           gcloud compute instances update-container hayati-bedava \
