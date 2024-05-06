@@ -45,8 +45,8 @@ darla_cumleleri = [
 ]
 buyur_abi = "¯\_(ツ)_/¯"
 project = 'esoteric-dryad-256520' 
-zone = 'europe-west4-b'  
-instance = 'hollanda'
+zone = 'europe-west8-a'  
+instance = 'milano'
 
 
 SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
