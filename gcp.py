@@ -27,7 +27,7 @@ class GcpCompute:
                 if time_elapsed >= max_wait:
                     await channel.send("Serveri acamadim adminler bi baksin.")
                     return
-            server_ip = self.get_request.execute()['networkInterfaces']['accessConfigs']['natIP']
+            server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
             await channel.send(f"Server({server_ip}) acildi. INSALLAH KEYFE KEDER ACMIYORSUNDUR PARA YAZIYOR ONA GORE!!!.")
         else:
             await channel.send("Lan it ! Server zaten acik. ")
