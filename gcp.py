@@ -27,15 +27,15 @@ class GcpCompute:
                 if time_elapsed >= max_wait:
                     await channel.send("Serveri acamadim adminler bi baksin.")
                     return
-            server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Server({server_ip}) acildi. INSALLAH KEYFE KEDER ACMIYORSUNDUR PARA YAZIYOR ONA GORE!!!.")
+            #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
+            await channel.send(f"Server acildi. Konsola `connect csbatagi.com;password ananinami` yaz bakalim nolcak.")
         else:
-            server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Lan it ! Server({server_ip}) zaten acik. ")
+            #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
+            await channel.send(f"Kardeslik, server zaten acik. Konsola `connect csbatagi.com;password ananinami` yazarsan isalleah.")
 
     async def stop_instance(self, channel):
         if self.get_request.execute()['status'] == "RUNNING":
-            await channel.send("Talimati verdim uzun suruyor yanliz bu is")
+            await channel.send("Talimati verdim uzun suruyor yanliz bu is.")
             time_elapsed = 0
             max_wait = 60 * 5
             self.stop_request.execute()
