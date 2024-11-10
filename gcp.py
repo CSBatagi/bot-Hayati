@@ -28,10 +28,10 @@ class GcpCompute:
                     await channel.send("Serveri acamadim adminler bi baksin.")
                     return
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Server acildi. Konsola `connect csbatagi.com;password ananinami` yaz bakalim nolcak.")
+            await channel.send(f"Server acildi. Konsola `connect server.csbatagi.com;password hepayni` yazalim oyuna girelim.")
         else:
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Kardeslik, server zaten acik. Konsola `connect csbatagi.com;password ananinami` yazarsan isalleah.")
+            await channel.send(f"Kardeslik, server zaten acik. Konsola `connect server.csbatagi.com;password hepayni` yazarsan isalleah.")
 
     async def stop_instance(self, channel):
         if self.get_request.execute()['status'] == "RUNNING":
