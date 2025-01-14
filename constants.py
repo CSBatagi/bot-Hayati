@@ -44,10 +44,11 @@ darla_cumleleri = [
     "Su guzel ortami bozmayin. Millet ac ac! Gel yaz adini su hasret bitsin",
     "Ssss kime diyom lan! Gelmiyonuz mu?"
 ]
-buyur_abi = "¯\_(ツ)_/¯"
+buyur_abi = '¯\_(ツ)_/¯'
 project = 'esoteric-dryad-256520' 
-zone = 'europe-west8-a'  
-instance = 'milano'
+
+server_cs16 = {"zone": "europe-west1-b", "instance": "milano"}
+server_cs2 = {"zone": "europe-west3-c", "instance": "cs2-server"}
 
 
 SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'

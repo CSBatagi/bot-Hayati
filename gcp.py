@@ -5,15 +5,15 @@ import constants as c
 
 
 class GcpCompute:
-    def __init__(self):
+    def __init__(self, zone, instance):
         SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
         secret_file = 'secrets/credentials.json'
         self.creds = service_account.Credentials.from_service_account_file(secret_file, scopes=SCOPES)
 
         self.service = discovery.build('compute', 'v1')
-        self.start_request = self.service.instances().start(project=c.project, zone=c.zone, instance=c.instance)
-        self.stop_request = self.service.instances().stop(project=c.project, zone=c.zone, instance=c.instance)
-        self.get_request = self.service.instances().get(project=c.project, zone=c.zone, instance=c.instance)
+        self.start_request = self.service.instances().start(project=c.project, zone=zone, instance=instance)
+        self.stop_request = self.service.instances().stop(project=c.project, zone=zone, instance=instance)
+        self.get_request = self.service.instances().get(project=c.project, zone=zone, instance=instance)
 
     async def start_instance(self, channel):
 
@@ -48,3 +48,4 @@ class GcpCompute:
             await channel.send("Server kapandi.")
         else:
             await channel.send("Server calismiyo ki olm.")
+

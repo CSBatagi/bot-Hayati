@@ -3,6 +3,7 @@ import logging.config
 import os
 import random
 import re
+import asyncio
 
 import discord
 from dotenv import load_dotenv
@@ -22,7 +23,8 @@ intents.members = True
 # client = commands.Bot(command_prefix='!', intents=intents)
 client = discord.Client(intents=intents)
 sheet = GSheet()
-gcp = GcpCompute()
+gcp_16 = GcpCompute(c.server_cs16['zone'], c.server_cs16['instance'])
+gcp_2 = GcpCompute(c.server_cs2['zone'], c.server_cs2['instance'])
 gptObj = Gpt()
 
 load_dotenv()
@@ -156,15 +158,14 @@ async def on_message(message: discord.Message):
     elif "dur" == msg:
         await timer.stop(message.channel)
 
-    elif "server" in msg and (("ac" in msg) or ("aç" in msg)):
-        toss = random.randint(0, 1)
-        if toss == 0:
-            await gcp.start_instance(message.channel)
-        else:
-            await message.channel.send("Servera 50 lira sıkışmış kanka. Benim IBANa bi ateşlersen açayım. DE68500105178297336485")
+    elif "server" in msg and (("16" in msg) or ("1.6" in msg)):
+            await gcp_16.start_instance(message.channel)
+    elif "server" in msg and ("2" in msg or "cs2" in msg):
+        await gcp_2.start_instance(message.channel)
 
     elif "server" in msg and "kapa" in msg:
-        await gcp.stop_instance(message.channel)
+        await message.channel.send("cs16 ve cs2 serverlarini da kapatiyorum..")
+        await asyncio.gather(gcp_16.stop_instance(message.channel), gcp_2.stop_instance(message.channel))
 
     else:
         await message.channel.send(c.buyur_abi)
