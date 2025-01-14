@@ -5,7 +5,7 @@ import constants as c
 
 
 class GcpCompute:
-    def __init__(self, zone, instance):
+    def __init__(self, zone, instance, subdomain):
         SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
         secret_file = 'secrets/credentials.json'
         self.creds = service_account.Credentials.from_service_account_file(secret_file, scopes=SCOPES)
@@ -14,6 +14,7 @@ class GcpCompute:
         self.start_request = self.service.instances().start(project=c.project, zone=zone, instance=instance)
         self.stop_request = self.service.instances().stop(project=c.project, zone=zone, instance=instance)
         self.get_request = self.service.instances().get(project=c.project, zone=zone, instance=instance)
+        self.subdomain = subdomain
 
     async def start_instance(self, channel):
 
@@ -28,10 +29,10 @@ class GcpCompute:
                     await channel.send("Serveri acamadim adminler bi baksin.")
                     return
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Server acildi. Konsola `connect server.csbatagi.com;password hepayni` yazalim oyuna girelim.")
+            await channel.send(f"Server acildi. Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazalim oyuna girelim.")
         else:
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Kardeslik, server zaten acik. Konsola `connect server.csbatagi.com;password hepayni` yazarsan isalleah.")
+            await channel.send(f"Kardeslik, server zaten acik. Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazarsan isalleah.")
 
     async def stop_instance(self, channel):
         if self.get_request.execute()['status'] == "RUNNING":

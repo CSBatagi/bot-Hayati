@@ -23,8 +23,8 @@ intents.members = True
 # client = commands.Bot(command_prefix='!', intents=intents)
 client = discord.Client(intents=intents)
 sheet = GSheet()
-gcp_16 = GcpCompute(c.server_cs16['zone'], c.server_cs16['instance'])
-gcp_2 = GcpCompute(c.server_cs2['zone'], c.server_cs2['instance'])
+gcp_16 = GcpCompute(c.server_cs16['zone'], c.server_cs16['instance'], c.server_cs16['subdomain'])
+gcp_2 = GcpCompute(c.server_cs2['zone'], c.server_cs2['instance'], c.server_cs2['subdomain'])
 gptObj = Gpt()
 
 load_dotenv()
@@ -158,7 +158,7 @@ async def on_message(message: discord.Message):
     elif "dur" == msg:
         await timer.stop(message.channel)
 
-    elif "server" in msg and (("16" in msg) or ("1.6" in msg)):
+    elif "server" in msg and ("16" in msg or "1.6" in msg):
             await gcp_16.start_instance(message.channel)
     elif "server" in msg and ("2" in msg or "cs2" in msg):
         await gcp_2.start_instance(message.channel)

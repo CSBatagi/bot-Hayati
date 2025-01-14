@@ -47,8 +47,8 @@ darla_cumleleri = [
 buyur_abi = '¯\_(ツ)_/¯'
 project = 'esoteric-dryad-256520' 
 
-server_cs16 = {"zone": "europe-west1-b", "instance": "milano"}
-server_cs2 = {"zone": "europe-west3-c", "instance": "cs2-server"}
+server_cs16 = {"zone": "europe-west8-a", "instance": "milano", "subdomain": "server"}
+server_cs2 = {"zone": "europe-west3-c", "instance": "cs2-server", "subdomain": "cs2"}
 
 
 SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
