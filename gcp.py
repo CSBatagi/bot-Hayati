@@ -34,10 +34,10 @@ class GcpCompute:
                 connectstr = f"Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazalim oyuna girelim."
             else: 
                 connectstr = ""
-            await channel.send(f"Server {self.instance} acildi." + connectstr)
+            await channel.send(f"{self.instance} acildi." + connectstr)
         else:
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Kardeslik, server zaten acik. Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazarsan isalleah.")
+            await channel.send(f"Kardeslik, {self.instance} zaten acik. Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazarsan isalleah.")
 
     async def stop_instance(self, channel):
         if self.get_request.execute()['status'] == "RUNNING":
@@ -49,9 +49,9 @@ class GcpCompute:
                 await sleep(3)
                 time_elapsed += 3
                 if time_elapsed >= max_wait:
-                    await channel.send("Server kapanmiyor lan adminler bi baksin.")
+                    await channel.send(f"{self.instance} kapanmiyor lan adminler bi baksin.")
                     return
-            await channel.send("Server kapandi.")
+            await channel.send(f"{self.instance} kapandi.")
         else:
-            await channel.send("Server calismiyo ki olm.")
+            await channel.send(f"{self.instance} calismiyo ki olm.")
 
