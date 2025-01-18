@@ -15,6 +15,7 @@ class GcpCompute:
         self.stop_request = self.service.instances().stop(project=c.project, zone=zone, instance=instance)
         self.get_request = self.service.instances().get(project=c.project, zone=zone, instance=instance)
         self.subdomain = subdomain
+        self.instance = instance
 
     async def start_instance(self, channel):
 
@@ -29,7 +30,11 @@ class GcpCompute:
                     await channel.send("Serveri acamadim adminler bi baksin.")
                     return
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            await channel.send(f"Server acildi. Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazalim oyuna girelim.")
+            if self.subdomain:
+                connectstr = f"Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazalim oyuna girelim."
+            else: 
+                connectstr = ""
+            await channel.send(f"Server {self.instance} acildi." + connectstr)
         else:
             #server_ip = self.get_request.execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
             await channel.send(f"Kardeslik, server zaten acik. Konsola `connect {self.subdomain}.csbatagi.com;password hepayni` yazarsan isalleah.")

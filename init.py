@@ -25,6 +25,8 @@ client = discord.Client(intents=intents)
 sheet = GSheet()
 gcp_16 = GcpCompute(c.server_cs16['zone'], c.server_cs16['instance'], c.server_cs16['subdomain'])
 gcp_2 = GcpCompute(c.server_cs2['zone'], c.server_cs2['instance'], c.server_cs2['subdomain'])
+get5 = GcpCompute(c.get5['zone'], c.get5['instance'], c.get5['subdomain'])
+
 gptObj = Gpt()
 
 load_dotenv()
@@ -161,11 +163,11 @@ async def on_message(message: discord.Message):
     elif "server" in msg and ("16" in msg or "1.6" in msg):
             await gcp_16.start_instance(message.channel)
     elif "server" in msg and ("2" in msg or "cs2" in msg):
-        await gcp_2.start_instance(message.channel)
+            await asyncio.gather(gcp_2.start_instance(message.channel), get5.start_instance(message.channel))
 
     elif "server" in msg and "kapa" in msg:
         await message.channel.send("cs16 ve cs2 serverlarini da kapatiyorum..")
-        await asyncio.gather(gcp_16.stop_instance(message.channel), gcp_2.stop_instance(message.channel))
+        await asyncio.gather(gcp_16.stop_instance(message.channel), gcp_2.stop_instance(message.channel), get5.stop_instance(message.channel))
 
     else:
         await message.channel.send(c.buyur_abi)

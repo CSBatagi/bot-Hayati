@@ -49,6 +49,7 @@ project = 'esoteric-dryad-256520'
 
 server_cs16 = {"zone": "europe-west8-a", "instance": "milano", "subdomain": "server"}
 server_cs2 = {"zone": "europe-west3-c", "instance": "cs2-server", "subdomain": "cs2"}
+get5 = {"zone": "europe-west1-d", "instance": "get5", "subdomain": None}
 
 
 SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
