@@ -160,14 +160,15 @@ async def on_message(message: discord.Message):
     elif "dur" == msg:
         await timer.stop(message.channel)
 
-    elif "server" in msg and ("16" in msg or "1.6" in msg):
-            await gcp_16.start_instance(message.channel)
-    elif "server" in msg and ("2" in msg or "cs2" in msg):
+    # elif "server" in msg and ("16" in msg or "1.6" in msg):
+    #         await gcp_16.start_instance(message.channel)
+    elif "server" in msg and ("ac" in msg or "aç" in msg):
             await asyncio.gather(gcp_2.start_instance(message.channel), get5.start_instance(message.channel))
 
     elif "server" in msg and "kapa" in msg:
-        await message.channel.send("cs16 ve cs2 serverlarini da kapatiyorum..")
-        await asyncio.gather(gcp_16.stop_instance(message.channel), gcp_2.stop_instance(message.channel), get5.stop_instance(message.channel))
+        await message.channel.send(" Kapatma komutunu verdim..")
+        # await asyncio.gather(gcp_16.stop_instance(message.channel), gcp_2.stop_instance(message.channel), get5.stop_instance(message.channel))
+        await asyncio.gather(gcp_2.stop_instance(message.channel), get5.stop_instance(message.channel))
 
     else:
         await message.channel.send(c.buyur_abi)

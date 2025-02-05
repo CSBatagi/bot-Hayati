@@ -52,6 +52,7 @@ server_cs2 = {"zone": "europe-west3-c", "instance": "cs2-server", "subdomain": "
 get5 = {"zone": "europe-west1-d", "instance": "get5", "subdomain": None}
 
 
-SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
+SPREADSHEET_ID='1DRQ79VYPpJoUxK2VTVnk6-8glm4xqa1w-mPnS-Yk4CE'
+# SPREADSHEET_ID='1bohwPYR3xRbXKPz9gtFnpEnp-ay8A2KakKhKUabqWUo'
 DRAFT_RANGE = 'DRAFT!A2:D40'
 DRAFT_UPDATE_RANGE='DRAFT!C2:D40'
